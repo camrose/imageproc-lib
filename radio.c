@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2011, Regents of the University of California
+* Copyright (c) 2011-2012, Regents of the University of California
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
 * v. 0.4
 *
 * Revisions:
-*  Humphrey Hu        2011-06-06      Initial implementation
+*  Humphrey Hu      2011-06-06      Initial implementation
 *  Humphrey Hu      2012-02-03      Structural changes to reduce irq handler runtime   
 * 
 * Notes:
@@ -57,19 +57,19 @@
 #include <stdlib.h>
 
 // TODO: Move this to some central header!!
-#define FCY                                    (40000000)
+#define FCY                                     (40000000)
 
-#define RADIO_DEFAULT_SRC_ADDR                 (0x1101)
-#define RADIO_DEFAULT_SRC_PAN                      (0x1001)
-#define RADIO_DEFAULT_CHANNEL                  (0x15)
-#define RADIO_DEFAULT_RETRIES                  (3)
+#define RADIO_DEFAULT_SRC_ADDR                  (0x1101)
+#define RADIO_DEFAULT_SRC_PAN                   (0x1001)
+#define RADIO_DEFAULT_CHANNEL                   (0x15)
+#define RADIO_DEFAULT_RETRIES                   (3)
 
-#define RADIO_DEFAULT_PACKET_RETRIES           (2)
-#define TX_TIMEOUT_MS                          (75)
+#define RADIO_DEFAULT_PACKET_RETRIES            (2)
+#define TX_TIMEOUT_MS                           (75)
 
-#define RADIO_CALIB_PERIOD                     (300000) // 5 minutes
+#define RADIO_CALIB_PERIOD                      (300000) // 5 minutes
 
-#define WATCHDOG_ITERATIONS                    (1000)
+#define WATCHDOG_ITERATIONS                     (1000)
 
 // =========== Static variables ===============================================
 

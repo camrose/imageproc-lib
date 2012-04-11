@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011-2012, Regents of the University of California
  * All rights reserved.
  *
@@ -121,6 +121,14 @@ typedef struct {
 	CamRow *rows;
 } CamFrameStruct;
 
+typedef struct {
+    unsigned char type;
+    unsigned char active;
+    unsigned int pad;
+    unsigned long frame_start;
+    unsigned long frame_period;
+} CamParamStruct;
+
 typedef CamFrameStruct *CamFrame;
 
 // Higher level interrupt handler for camera events
@@ -153,6 +161,9 @@ void camRunCalib(void);
 
 // Begin asynchronous capture procedure
 void camStart(void);
+
+// Retrieve camera parameters
+void camGetParams(CamParamStruct *params);
 
 // Set function to be called after various events
 void camSetIrqHandler(CamIrqHandler irq);

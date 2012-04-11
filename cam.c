@@ -48,7 +48,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cam.h"
-//#include "sys_clock.h" // Pick either sys_clock or stopwatch for timestamps
+#include "sys_clock.h" // Pick either sys_clock or stopwatch for timestamps
 //#include "stopwatch.h"
 #include "led.h"
 
@@ -125,6 +125,8 @@ static unsigned char is_ready;
 
 // Asynchronous capture state
 static CTimerState ct_state = CT_NOT_SYNC;
+static unsigned long frame_start, frame_period;
+
 
 // Asynchronous capture timing parameters
 static unsigned int row_row_time = ROW_ROW_TIME;
@@ -199,6 +201,17 @@ void camSetup(void) {
     
 } 
 
+void camGetParams(CamParamStruct *params) {
+
+    if(params == NULL) { return; }
+    
+    params->type = 0; // Not implemented yet!
+    params->active = is_ready;
+    params->frame_start = frame_start;
+    params->frame_period = frame_period;
+
+}
+
 // Interrupt handler for Timer 7
 // Syncs frame timings and captures camera rows. This timer is
 //	the highest priority with a medium execution time.
@@ -207,7 +220,7 @@ void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
     
     if(ct_state == CT_WAIT_VSYNC) { 
         frame_waiter();      		// Avoid clock drift
-        WriteTimer7(0);				// Reset timer        
+        WriteTimer7(0);				// Reset timer                        
         
         cntrIncrement(frame_counter);
         cntrSet(row_counter, 0);	// Reset row counter	
@@ -252,9 +265,10 @@ void camStart(void) {
     if(!is_ready) { return; }
 
     DisableIntT7;				// Disable interrupt while syncing
-    frame_waiter();             // Avoid clock drift
+    frame_waiter();             // Avoid clock drift    
     PR7 = VSYNC_ROW_TIME;		// Set wait time
     WriteTimer7(0);				// Reset timer	
+    frame_start = sclockGetLocalTicks();
     cntrSet(row_counter, 0);	// Reset row counter
     cntrSet(frame_counter, 0);	// Reset frame counter
     ct_state = CT_WAIT_ROW;		// Wait for first row
@@ -266,7 +280,8 @@ void camStart(void) {
 void camRunCalib(void) {
 
     unsigned int tic, capture_time, i;    
-
+    unsigned long t1, t2;
+    
     if(!is_ready) { return; }
 
     // Approximately 8*pixels cycles per row
@@ -278,9 +293,12 @@ void camRunCalib(void) {
     // VSYNC to VSYNC timing
     frame_waiter();
     WriteTimer7(0);    
+    t1 = sclockGetLocalTicks();
     frame_waiter();
     tic = ReadTimer7();        
+    t2 = sclockGetLocalTicks();
     vsync_vsync_time = tic - VSYNC_VSYNC_OFFSET;
+    frame_period = t2 - t1;
     
     // VSYNC to row timing
     frame_waiter();
