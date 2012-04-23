@@ -66,37 +66,33 @@
 
 #define RADIO_DEFAULT_PACKET_RETRIES            (2)
 #define TX_TIMEOUT_MS                           (75)
+#define WATCHDOG_TIMEOUT_MS                     (1000)
 
 #define RADIO_CALIB_PERIOD                      (300000) // 5 minutes
-
-#define WATCHDOG_ITERATIONS                     (1000)
 
 // =========== Static variables ===============================================
 
 // State information
+static unsigned char is_ready = 0;
 static RadioState radio_state;
-static unsigned char packet_sqn;
-static unsigned int retries;//, watchdog_counter;
+static unsigned char packet_sqn, retries;
 
-static unsigned long last_calib_timestamp;
+static unsigned long last_calib_timestamp, progress_timestamp;
+static unsigned int watchdog_timeout, watchdog_state;
 
 // In/out packet FIFO queues
 static CircArray tx_queue, rx_queue;
 
 // Local config information
-static unsigned int local_addr;
-static unsigned int local_pan;
+static unsigned int local_addr, local_pan, max_packet_retries;
 static unsigned char local_channel;
-static unsigned int max_packet_retries;
 
 // =========== Function stubs =================================================
 
 // IRQ handlers
 void trxCallback(unsigned int irq_cause);
+static inline void watchdogProgress(void);
 
-// Watchdog timer
-static inline void startRadioWatchdog(void);
-static inline void stopRadioWatchdog(void);
 static void radioReset(void);
 
 // Internal processing
@@ -110,23 +106,11 @@ static unsigned int radioSetStateRx(void);
 static unsigned int radioSetStateIdle(void);
 //static unsigned int radioSetStateOff(void);
 
-// Peripheral setup functions
-static void setupTimer3(unsigned int timeout);
-
 // =========== Public functions ===============================================
 
 // Initialize radio software and hardware
 void radioInit(unsigned int tx_queue_length, unsigned int rx_queue_length) {
 
-    // Configure transceiver IC
-    trxSetup();
-
-    // Set IC driver callback
-    trxSetIrqCallback(&trxCallback);
-    
-    // Set up transmission timeout timer
-    setupTimer3(TX_TIMEOUT_MS);
-    
     // Initialize FIFO buffers
     tx_queue = carrayCreate(tx_queue_length);    // Initialize TX queue
     rx_queue = carrayCreate(rx_queue_length);    // Initialize RX queue
@@ -136,7 +120,15 @@ void radioInit(unsigned int tx_queue_length, unsigned int rx_queue_length) {
     retries = 0;                            // Initialize retry counter
     max_packet_retries = RADIO_DEFAULT_PACKET_RETRIES;
     last_calib_timestamp = 0;
+    watchdogProgress();
+    watchdog_timeout = WATCHDOG_TIMEOUT_MS;
+    watchdog_state = 0;
+
+    trxSetup(); // Configure transceiver IC
     
+    trxSetIrqCallback(&trxCallback); // Set IC driver callback
+
+
     // set default address
     trxSetAddress(RADIO_DEFAULT_SRC_ADDR);
     local_addr = RADIO_DEFAULT_SRC_ADDR;
@@ -152,8 +144,10 @@ void radioInit(unsigned int tx_queue_length, unsigned int rx_queue_length) {
     // Set number of frame transmit retries
     trxSetRetries(RADIO_DEFAULT_RETRIES);
 
-    trxSetStateRx();
+    is_ready = 1;
 
+    trxSetStateRx();    
+    
 }
 
 void radioSetSrcAddr(unsigned int src_addr) {
@@ -213,6 +207,20 @@ RadioState radioGetState(void) {
 
 }
 
+void radioSetWatchdogState(unsigned char state) {
+
+    watchdog_state = state;
+    watchdogProgress();
+
+}
+
+void radioSetWatchdogTime(unsigned int time) {
+
+    watchdog_timeout = time;
+    watchdogProgress();
+    
+}
+
 MacPacket radioDequeueRxPacket(void) {
 
     return (MacPacket)carrayPopTail(rx_queue);
@@ -220,8 +228,7 @@ MacPacket radioDequeueRxPacket(void) {
 }
 
 unsigned int radioEnqueueTxPacket(MacPacket packet) {
-
-    // Append returns 0 if queue is full
+    
     return carrayAddTail(tx_queue, packet);
 
 }
@@ -288,7 +295,6 @@ MacPacket radioRequestPacket(unsigned int data_size) {
 
 }
 
-// TODO: Support extra-PAN packets
 MacPacket radioCreatePacket(unsigned int data_size) {
 
     MacPacket packet = macCreateDataPacket();
@@ -328,25 +334,19 @@ void radioDeletePacket(MacPacket packet) {
 // The Big Function
 void radioProcess(void) {
 
-// Watchdog iterations not ready yet
-//    if(radio_state == STATE_TX_BUSY ||
-//       radio_state == STATE_RX_BUSY ||
-//       radio_state == STATE_TRANSITIONING) {
-//        watchdog_counter++;
-//    } else {
-//        watchdog_counter = 0;
-//    }
-//
-//    if(watchdog_counter > WATCHDOG_ITERATIONS) {
-//        radioReset();
-//        delay_ms(2);
-//    }
+    if(watchdog_state) {
+        if(sclockGetLocalMillis() - progress_timestamp > WATCHDOG_TIMEOUT_MS) {
+            radioReset();
+            return;
+        }
+    }
 
     // Process pending outgoing packets
     if(!radioTxQueueEmpty()) {
         
         // Return if can't get to Tx state at the moment
-        if(!radioSetStateTx()) { return; }        
+        if(!radioSetStateTx()) { return; }
+        watchdogProgress();
         radioProcessTx(); // Process outgoing buffer
         return;
         
@@ -365,6 +365,8 @@ void radioProcess(void) {
     // Default to Rx state
     if(!radioSetStateRx()) { return; }
 
+    // If the code runs to this point, all buffers are clear and radio is idle
+    watchdogProgress();
 
 }
 
@@ -381,12 +383,12 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
 
 static void radioReset(void) {
 
-    // Return to off state
+    progress_timestamp = sclockGetLocalMillis();
     trxReset();
     radio_state = STATE_OFF;
     radioSetStateIdle();
     LED_ORANGE = 0;
-    LED_RED = 1;
+    LED_RED = ~LED_RED;
 
 }
 
@@ -411,13 +413,11 @@ void trxCallback(unsigned int irq_cause) {
         // Beginning reception process
         if(irq_cause == RADIO_RX_START) {            
             LED_ORANGE = 1;
-            radio_state = STATE_RX_BUSY;            
-            startRadioWatchdog();            
+            radio_state = STATE_RX_BUSY;                    
         }        
     
     } else if(radio_state == STATE_RX_BUSY) {
         
-        stopRadioWatchdog();
         // Reception complete
         if(irq_cause == RADIO_RX_SUCCESS) {                       
             radioProcessRx();   // Process newly received data
@@ -428,8 +428,7 @@ void trxCallback(unsigned int irq_cause) {
     } else if(radio_state == STATE_TX_IDLE) {        
         // Shouldn't be getting interrupts when waiting to transmit
     } else if(radio_state == STATE_TX_BUSY) {
-        
-        stopRadioWatchdog();
+                
         radio_state = STATE_TX_IDLE;
         LED_ORANGE = 0;
         // Transmit successful
@@ -449,8 +448,7 @@ void trxCallback(unsigned int irq_cause) {
 
     // Hardware error
     if(irq_cause == RADIO_HW_FAILURE) {                
-        // Reset everything
-        stopRadioWatchdog();
+        // Reset everything        
         trxReset();
         //radioFlushQueues();               
     }    
@@ -570,7 +568,7 @@ static unsigned int radioBeginTransition(void) {
 static void radioProcessTx(void) {
     
     MacPacket packet;
-    
+
     packet = (MacPacket) carrayPeekHead(tx_queue); // Find an outgoing packet
     if(packet == NULL) { return; }
     
@@ -581,8 +579,7 @@ static void radioProcessTx(void) {
     macSetSeqNum(packet, packet_sqn++); // Set packet sequence number
         
     trxWriteFrameBuffer(packet); // Write packet to transmitter and send
-    trxBeginTransmission();        
-    startRadioWatchdog();     // Begin transmission timeout timer
+    trxBeginTransmission();            
 
 }
 
@@ -610,51 +607,8 @@ static void radioProcessRx(void) {
     
 }
 
-/**
- * Start timeout timer
- */
-static inline void startRadioWatchdog(void) {
-    
-    _T3IF = 0;
-    WriteTimer3(0);
-    EnableIntT3;
-    
-}
+static inline void watchdogProgress(void) {
 
-/**
- * Stop timeout timer
- */
-static inline void stopRadioWatchdog(void) {
-
-    DisableIntT3;
-    WriteTimer3(0);
-    _T3IF = 0;
+    progress_timestamp = sclockGetLocalMillis();
 
 }
-
-/**
- * Set up timeout timer
- *
- * @param timeout Number of milliseconds to wait
- */
-void setupTimer3(unsigned int timeout) {
-
-    unsigned int con_reg, period;
-    
-    con_reg =     T3_ON &
-    T3_IDLE_STOP &
-    T3_GATE_OFF &
-    T3_PS_1_256 &
-    T3_SOURCE_INT;
-
-    _T3IF = 0;
-    
-    period = (FCY/1000)*timeout/256;    // Conversion to ms
-    WriteTimer3(0);
-    OpenTimer3(con_reg, period);
-    ConfigIntTimer3(T3_INT_PRIOR_5 & T3_INT_OFF);
-    
-}
-
-
-

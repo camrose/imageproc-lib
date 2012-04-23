@@ -55,8 +55,6 @@
  #define MPDU_HEADER_BASE_LENGTH    (3)
  #define MAC_CRC_LENGTH             (2)
 
- unsigned int macCalculateHeaderLength(MacPacket packet);
-
  MacPacket macCreateEmpty(void) {
 
     MacPacket packet = (MacPacket)malloc(sizeof(MacPacketStruct));

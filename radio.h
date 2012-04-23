@@ -84,7 +84,9 @@ unsigned char radioGetRetries(void);
 // See mac packet address set and packet creation methods
 
 RadioState radioGetState(void); // For debug..
-//void radioReadTrxId(unsigned char *id);
+
+void radioSetWatchdogState(unsigned char state);
+void radioSetWatchdogTime(unsigned int time);
 
 // Queue interface
 unsigned int radioEnqueueTxPacket(MacPacket packet);
