@@ -84,6 +84,25 @@
 #ifndef __CAMERA_H
 #define __CAMERA_H
 
+#include "ov7660.h"
+
+// Windowing parameters
+#define WINDOW_START_COL        (5)   // Start capture at this col
+#define WINDOW_END_COL          (155) // End capture at this col
+#define WINDOW_START_ROW        (0)   // Start capture at this row
+#define WINDOW_END_ROW          (120) // End capture at this row
+
+#define WINDOW_IMAGE_COLS       (WINDOW_END_COL - WINDOW_START_COL)       
+#define WINDOW_IMAGE_ROWS       (WINDOW_END_ROW - WINDOW_START_ROW)
+
+// Downsampling parameters
+#define DS_COL                  (3) // Capturing 1/DS_COL pixels
+#define DS_ROW                  (3) // Capturing 1/DS_ROW rows
+#define DS_FRAME                (1) // Capturing 1/DS_FRAME frames
+
+#define DS_IMAGE_COLS           (WINDOW_IMAGE_COLS/DS_COL)
+#define DS_IMAGE_ROWS           (WINDOW_IMAGE_ROWS/DS_ROW)
+
 // ============== Typedefs ====================================================
 
 // These are status codes handed to an irq handler registered to the camera
@@ -98,29 +117,20 @@ typedef enum {
     CAM_IRQ_ERROR,
 } CamIrqCause;
 
-// Row object that represents a row of pixels from the camera
-// Fields:  timestamp = system time at which capture was completed
-//          pixels = array of bytes representing pixels
-// See:     camCreateRow(), camDeleteRow()
-typedef struct {
-    unsigned long timestamp;
-    unsigned int row_num;
-    unsigned char *pixels;
-} CamRowStruct;
 
-typedef CamRowStruct *CamRow;
 
-/*  Frame object containing the frame dimensions, sequence number,
- *  time upon capture completion, and the rows.
+/*  Frame object containing the sequence number,
+ *  time upon capture completion, and the pixels.
  */
-typedef struct {
-    unsigned int num_rows;
-    unsigned int num_cols;
-    unsigned int frame_num;
-    unsigned long timestamp;
-    CamRow *rows;
-} CamFrameStruct;
+typedef unsigned char CamRow[DS_IMAGE_COLS];
+typedef CamRow RowArray[DS_IMAGE_ROWS];
 
+typedef struct {    
+    unsigned long timestamp;
+    unsigned int frame_num;
+    RowArray pixels;
+} CamFrame;
+ 
 typedef struct {
     unsigned char type;
     unsigned char active;
@@ -128,8 +138,6 @@ typedef struct {
     unsigned long frame_start;
     unsigned long frame_period;
 } CamParamStruct;
-
-typedef CamFrameStruct *CamFrame;
 
 // Higher level interrupt handler for camera events
 typedef void (*CamIrqHandler)(unsigned int irq_cause);
@@ -142,7 +150,7 @@ typedef void (*CamFrameWaiter)(void);
 // ============== Methods =====================================================
 
 // Set up the camera capture module
-void camSetup(void);
+void camSetup(CamFrame *frames, unsigned int num_frames);
 
 // Measure the capture timings
 void camRunCalib(void);
@@ -168,31 +176,15 @@ void camGetParams(CamParamStruct *params);
 // Set function to be called after various events
 void camSetIrqHandler(CamIrqHandler irq);
 
-// Returns the newest row object
-CamRow camGetRow(void);
-
 // Returns the next available full frame object
-CamFrame camGetFrame(void);
+CamFrame* camGetFrame(void);
 // Return a frame to the camera
-void camReturnFrame(CamFrame frame);
-
-// See if camera has new row
-unsigned char camHasNewRow(void);
+void camReturnFrame(CamFrame *frame);
 
 // See if camera has new frame
 unsigned char camHasNewFrame(void);
 
-// Return output frame size
-void camGetFrameSize(unsigned int *sizes);
-
 // Returns current frame/row numbers
 unsigned int camGetFrameNum(void);
-unsigned int camGetRowNum(void);
-
-// Object creation/destruction methods
-CamRow camCreateRow(unsigned int size);
-void camDeleteRow(CamRow row);
-CamFrame camCreateFrame(unsigned int cols, unsigned int rows);
-void camDeleteFrame(CamFrame frame);
 
 #endif // __CAMERA_H
