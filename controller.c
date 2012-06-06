@@ -68,7 +68,7 @@ float ctrlRunPid(CtrlPidParam pid, float y, DigitalFilter lpf) {
     if (lpf == NULL) {
         d = pid->kd*(derr - pid->derrold);
     } else {
-        d = pid->kd*dspApplyFilter(lpf, derr - pid->derrold);
+        d = pid->kd*dfilterApply(lpf, derr - pid->derrold);
     }
 
     u = pid->offset + p + pid->iold + d;

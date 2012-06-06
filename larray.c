@@ -31,11 +31,11 @@
 *
 * by Humphrey Hu
 *
-* v 0.1
+* v 0.2
 *
 * Revisions:
 *  Humphrey Hu         2012-02-04    Initial implementation
-*                      
+*  Humphrey Hu         2012-02-06    Added size querying                
 */
 
 #include "larray.h"
