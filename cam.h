@@ -129,7 +129,8 @@ typedef struct {
     unsigned long timestamp;
     unsigned int frame_num;
     RowArray pixels;
-} CamFrame;
+} CamFrameStruct; 
+typedef CamFrameStruct* CamFrame;
  
 typedef struct {
     unsigned char type;
@@ -138,6 +139,7 @@ typedef struct {
     unsigned long frame_start;
     unsigned long frame_period;
 } CamParamStruct;
+typedef CamParamStruct* CamParam;
 
 // Higher level interrupt handler for camera events
 typedef void (*CamIrqHandler)(unsigned int irq_cause);
@@ -150,7 +152,7 @@ typedef void (*CamFrameWaiter)(void);
 // ============== Methods =====================================================
 
 // Set up the camera capture module
-void camSetup(CamFrame *frames, unsigned int num_frames);
+void camSetup(CamFrame frames, unsigned int num_frames);
 
 // Measure the capture timings
 void camRunCalib(void);
@@ -171,15 +173,15 @@ void camRunCalib(void);
 void camStart(void);
 
 // Retrieve camera parameters
-void camGetParams(CamParamStruct *params);
+void camGetParams(CamParam params);
 
 // Set function to be called after various events
 void camSetIrqHandler(CamIrqHandler irq);
 
 // Returns the next available full frame object
-CamFrame* camGetFrame(void);
+CamFrame camGetFrame(void);
 // Return a frame to the camera
-void camReturnFrame(CamFrame *frame);
+void camReturnFrame(CamFrame frame);
 
 // See if camera has new frame
 unsigned char camHasNewFrame(void);

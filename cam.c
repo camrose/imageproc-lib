@@ -81,10 +81,10 @@ void _T7Interrupt(void);
 void camCaptureRow(void);
 static void processRow(void);
 
-static CamFrame* getEmptyFrame(void);
-static void enqueueEmptyFrame(CamFrame *frame);
-static CamFrame* getOldestFullFrame(void);
-static void enqueueFullFrame(CamFrame *frame);
+static CamFrame getEmptyFrame(void);
+static void enqueueEmptyFrame(CamFrame frame);
+static CamFrame getOldestFullFrame(void);
+static void enqueueFullFrame(CamFrame frame);
 
 // ==== Static Variables ======================================================
 // Driver validity
@@ -108,7 +108,7 @@ static Counter row_counter;
 static unsigned char row_buff[NATIVE_IMAGE_COLS];
 
 // Frame buffering variables
-static CamFrame *current_frame;
+static CamFrame current_frame;
 static unsigned int next_row_index;
 static unsigned char has_new_frame;
 static CircArray empty_frame_pool, full_frame_pool;
@@ -120,7 +120,7 @@ static CamFrameWaiter frame_waiter;
 
 // ==== Public functions ======================================================
 
-void camSetup(CamFrame* frames, unsigned int num_frames) {    
+void camSetup(CamFrame frames, unsigned int num_frames) {    
 
     unsigned int i;    
     
@@ -155,7 +155,7 @@ void camSetup(CamFrame* frames, unsigned int num_frames) {
 
 }
 
-void camGetParams(CamParamStruct *params) {
+void camGetParams(CamParam params) {
 
     if(params == NULL) { return; }
     
@@ -250,13 +250,13 @@ unsigned char camHasNewFrame(void) {
 
 }
 
-CamFrame* camGetFrame(void) {
+CamFrame camGetFrame(void) {
 
     return getOldestFullFrame();
 
 }
 
-void camReturnFrame(CamFrame *frame) {
+void camReturnFrame(CamFrame frame) {
 
     if(frame == NULL) { return; }
     enqueueEmptyFrame(frame);
@@ -363,9 +363,9 @@ void processRow(void) {
  *
  * @return Next available frame for writing
  */
-static CamFrame* getEmptyFrame(void) {
+static CamFrame getEmptyFrame(void) {
 
-    CamFrame *frame;
+    CamFrame frame;
 
     frame = carrayPopHead(empty_frame_pool);
     if(frame == NULL) {
@@ -380,7 +380,7 @@ static CamFrame* getEmptyFrame(void) {
  *
  * @param frame CamFrame object to enqueue
  */
-static void enqueueEmptyFrame(CamFrame *frame) {
+static void enqueueEmptyFrame(CamFrame frame) {
 
     carrayAddTail(empty_frame_pool, frame);
 
@@ -391,9 +391,9 @@ static void enqueueEmptyFrame(CamFrame *frame) {
  *
  * @return Oldest full frame object
  */
-static CamFrame* getOldestFullFrame(void) {
+static CamFrame getOldestFullFrame(void) {
 
-    CamFrame *frame;
+    CamFrame frame;
 
     frame = carrayPopHead(full_frame_pool);
     if(carrayIsEmpty(full_frame_pool)) {
@@ -409,7 +409,7 @@ static CamFrame* getOldestFullFrame(void) {
  *
  * @param frame CamFrame object to enqueue
  */
-static void enqueueFullFrame(CamFrame *frame) {
+static void enqueueFullFrame(CamFrame frame) {
 
     carrayAddTail(full_frame_pool, frame);
     has_new_frame = 1;
