@@ -251,6 +251,7 @@ void gyroDumpData(unsigned char* buffer);
 *****************************************************************************/
 unsigned char* gyroReadXYZ(void);
 
+void gyroReadAll(void);
 
 /*****************************************************************************
 * Function Name : gyroGetXYZ
