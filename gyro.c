@@ -237,8 +237,31 @@ void gyroDumpData(unsigned char* buffer) {
 
 unsigned char* gyroReadXYZ(void) {
 
-    unsigned char gyro_data[8];
+    unsigned char gyro_data[6];
 
+    gyroStartTx();
+    gyroSendByte(GYRO_ADDR_WR);
+    gyroSendByte(0x1d);
+    gyroEndTx();
+    gyroStartTx();
+    gyroSendByte(GYRO_ADDR_RD);
+    gyroReadString(6, gyro_data, 1000);
+    gyroEndTx();
+
+    GyroData.chr_data[2] = gyro_data[1];
+    GyroData.chr_data[3] = gyro_data[0];    
+    GyroData.chr_data[4] = gyro_data[3];
+    GyroData.chr_data[5] = gyro_data[2];    
+    GyroData.chr_data[6] = gyro_data[5];    
+    GyroData.chr_data[7] = gyro_data[4];
+
+    return GyroData.chr_data + 2;
+    
+}
+
+void gyroReadAll(void) {
+
+    unsigned char gyro_data[8];
     gyroStartTx();
     gyroSendByte(GYRO_ADDR_WR);
     gyroSendByte(0x1b);
@@ -256,27 +279,6 @@ unsigned char* gyroReadXYZ(void) {
     GyroData.chr_data[5] = gyro_data[4];    
     GyroData.chr_data[6] = gyro_data[7];    
     GyroData.chr_data[7] = gyro_data[6];
-
-}
-
-void gyroReadAll(void) {
-
-    unsigned char gyro_data[8];
-    gyroStartTx();
-    gyroSendByte(GYRO_ADDR_WR);
-    gyroSendByte(0x1d);
-    gyroEndTx();
-    gyroStartTx();
-    gyroSendByte(GYRO_ADDR_RD);
-    gyroReadString(6, gyro_data, 1000);
-    gyroEndTx();
-
-    GyroData.chr_data[2] = gyro_data[1];
-    GyroData.chr_data[3] = gyro_data[0];
-    GyroData.chr_data[4] = gyro_data[3];
-    GyroData.chr_data[5] = gyro_data[2];
-    GyroData.chr_data[6] = gyro_data[5];
-    GyroData.chr_data[7] = gyro_data[4];
 
 }
 
