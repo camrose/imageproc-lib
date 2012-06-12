@@ -327,7 +327,7 @@ void camCaptureRow(void) {
 
 void processRow(void) {
 
-    unsigned int i, j;    
+    unsigned int i, j, k, acc;
     unsigned char *src_data, *dst_data;
 
     if(current_frame == NULL) {
@@ -338,10 +338,13 @@ void processRow(void) {
     dst_data = current_frame->pixels[next_row_index]; // Write into current frame
     src_data = row_buff;
 
-    i = 0;
-    // TODO: Add N-pixel averaging and N-pixel maximum luminescence sampling modes
-    for(j = WINDOW_START_COL; j < WINDOW_END_COL - 1; j += DS_COL ) {
-        dst_data[i++] = row_buff[j];
+    k = WINDOW_START_COL;
+    for(i = 0; i < DS_IMAGE_COLS; i++) {
+        acc = 0;
+        for(j = 0; j < DS_COL; j++) {
+            acc += row_buff[k++];
+        }
+        dst_data[i] = acc/DS_COL;
     }
         
     next_row_index++;    
