@@ -35,50 +35,7 @@
  *
  * Usage:
  *
- *  Initialization:
- *
- *  Begin by initializing the module. This sets up the necessary peripherals,
- *  initializes memory and calibrates itself.. Should initialization fail, the
- *  module will not be able to start, but should not produce errors.
- *
- *  ...
- *  camSetup();
- *  ...
- *
- *  Reading:
- *
- *  Captured data is stored in CamFrame objects. The exposed output buffer gives
- *  CamFrame objects in order of oldest to newest. Once processing is done, the
- *  frames must be returned to the camera module.
- *
- *  Latency-sensitive applications can use the CamRow getter, which returns the
- *  newest row in the back frame. These row objects are direct references to rows
- *  in buffered frames, so they do not need to be returned. However, as a result,
- *  they are also volatile and should be processed quickly. Time-of-capture
- *  timestamps are also saved. to each CamRow, and time-of-completion timestamps
- *  are saved to CamFrames.
- *
- *
- *  unsigned int i, j;
- *  unsigned char pixel;
- *  CamFrame frame;
- *  CamRow row;
- *  ...
- *  if(camHasNewFrame()) {
- *      frame = camGetFrame();
- *      for(i = 0; i < frame->num_rows; i++) {
- *          row = frame->rows[i];
- *          for(j = 0; j < frame->num_cols; j++) {
- *              pixel = row->pixels[j];
- *              // row processing here
- *          }
- *      }
- *  }
- *  camReturnFrame(frame);
- *  ...
- *  if(camHasNewRow()) {
- *      row = camGetRow();
- *  }
+ *  (Write me!)
  */
 
 #ifndef __CAMERA_H
@@ -96,8 +53,8 @@
 #define WINDOW_IMAGE_ROWS       (WINDOW_END_ROW - WINDOW_START_ROW)
 
 // Downsampling parameters
-#define DS_COL                  (3) // Capturing 1/DS_COL pixels
-#define DS_ROW                  (3) // Capturing 1/DS_ROW rows
+#define DS_COL                  (1) // Capturing 1/DS_COL pixels
+#define DS_ROW                  (2) // Capturing 1/DS_ROW rows
 #define DS_FRAME                (1) // Capturing 1/DS_FRAME frames
 
 #define DS_IMAGE_COLS           (WINDOW_IMAGE_COLS/DS_COL)
@@ -118,10 +75,6 @@ typedef enum {
 } CamIrqCause;
 
 
-
-/*  Frame object containing the sequence number,
- *  time upon capture completion, and the pixels.
- */
 typedef unsigned char CamRow[DS_IMAGE_COLS];
 typedef CamRow RowArray[DS_IMAGE_ROWS];
 

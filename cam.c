@@ -38,6 +38,7 @@
  *                  2012-01-31  Release
  *                  2012-02-16  Slight restructuring
  *                  2012-02-21  Changed to use pooled frames
+ *                  2012-06-02  Changed to static frames
  */
 
 #include "timer.h"
@@ -110,7 +111,7 @@ static unsigned char row_buff[NATIVE_IMAGE_COLS];
 // Frame buffering variables
 static CamFrame current_frame;
 static unsigned int next_row_index;
-static unsigned char has_new_frame;
+static unsigned char has_new_frame, frame_started;
 static CircArray empty_frame_pool, full_frame_pool;
 
 // Driver config'd function pointers
@@ -148,6 +149,7 @@ void camSetup(CamFrame frames, unsigned int num_frames) {
     irq_handler = NULL;   // Set up function pointers
     row_getter = &ovcamGetPixels;
     frame_waiter = &ovcamWaitForNewFrame;
+    frame_started = 0;
     
     is_ready = 1;
     
@@ -270,9 +272,7 @@ unsigned int camGetFrameNum(void) {
 // =========== Private Functions ==============================================
 
 // Interrupt handler for Timer 7
-// Syncs frame timings and captures camera rows. This timer is
-//  the highest priority with a medium execution time.
-// TODO: Separate hardware and software downsampling
+// Syncs frame timings and captures camera rows.
 void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
 
     if(ct_state == CT_WAIT_VSYNC) {
@@ -329,11 +329,14 @@ void processRow(void) {
 
     unsigned int i, j, k, acc;
     unsigned char *src_data, *dst_data;
-
-    if(current_frame == NULL) {
-        current_frame = getEmptyFrame(); // Load new frame
-        if(current_frame == NULL) { return; }
+    
+    if(cntrRead(row_counter) == 0) {        
+        if(current_frame == NULL) {
+            current_frame = getEmptyFrame(); // Load new frame
+        }
     }
+    
+    if(current_frame == NULL) { return; }
     
     dst_data = current_frame->pixels[next_row_index]; // Write into current frame
     src_data = row_buff;
@@ -355,7 +358,7 @@ void processRow(void) {
         current_frame->timestamp = sclockGetLocalTicks();
         enqueueFullFrame(current_frame); // Add to output queue
         current_frame = NULL;
-        next_row_index = 0;
+        next_row_index = 0;        
     }
 
 }

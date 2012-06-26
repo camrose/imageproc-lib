@@ -93,8 +93,8 @@ void attSetup(float ts) {
     xlReadXYZ();
     attZero();
     attReset();
-    swatchReset();
-    swatchTic();
+    //swatchReset();
+    //swatchTic();
 
     is_ready = 1;
 
@@ -179,7 +179,7 @@ void attEstimatePose(void) {
     if(!is_running) { return; }
 
     gyroGetRadXYZ(rate); // Get last read gyro values
-    timestamp = swatchToc(); // Record timestamp
+    //timestamp = swatchToc(); // Record timestamp
 
     // Calculate magnitude and disiplacement
     norm = sqrtf(rate[0]*rate[0] + rate[1]*rate[1] + rate[2]*rate[2]);
