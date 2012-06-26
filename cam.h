@@ -31,11 +31,21 @@
  *
  * by Humphrey Hu
  *
- * v.1.0
+ * v2.0
  *
  * Usage:
+ *  
+ *  static CamFrameStruct frame_buffer[2];
+ *  CamFrame frame;
+ 
+ *  camSetup(frame_buffer, 2);  // Hand camera driver allocated frames
+ *  camStart();                 // Begin asynchronous capture
  *
- *  (Write me!)
+ *  if(camHasNewFrame()) {
+ *      frame = camGetFrame();  // Get frame from driver
+ *      // Do processing here
+ *      camReturnFrame(frame);  // Return frame to driver
+ *  }
  */
 
 #ifndef __CAMERA_H
