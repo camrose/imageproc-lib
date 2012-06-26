@@ -127,7 +127,7 @@ void camSetup(CamFrame frames, unsigned int num_frames) {
     
     setupTimer7();  // Set up timer peripheral
 
-    next_row_index = 0;        
+    next_row_index = 0;
     has_new_frame = 0;
     current_frame = NULL;
 
@@ -169,20 +169,26 @@ void camGetParams(CamParam params) {
 }
 
 // Syncs the timer with the frame start event and begins the
-// capture process.
+//  capture process.
 void camStart(void) {
 
     if(!is_ready) { return; }
 
-    DisableIntT7;				// Disable interrupt while syncing
-    frame_waiter();             // Avoid clock drift    
-    PR7 = VSYNC_ROW_TIME;		// Set wait time
-    WriteTimer7(0);				// Reset timer	
+    DisableIntT7;               // Disable interrupt while syncing
+    frame_waiter();             // Avoid clock drift
+    PR7 = VSYNC_ROW_TIME;       // Set wait time
+    WriteTimer7(0);             // Reset timer
     frame_start = sclockGetGlobalTicks();
-    cntrSet(row_counter, 0);	// Reset row counter
-    cntrSet(frame_counter, 0);	// Reset frame counter
-    ct_state = CT_WAIT_ROW;		// Wait for first row
-    EnableIntT7;				// Re-enable interrupt
+    cntrSet(row_counter, 0);    // Reset row counter
+    cntrSet(frame_counter, 0);  // Reset frame counter
+    ct_state = CT_WAIT_ROW;     // Wait for first row
+    EnableIntT7;                // Re-enable interrupt
+
+}
+
+void camStop(void) {
+
+    DisableIntT7;
 
 }
 
@@ -278,7 +284,7 @@ void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
     if(ct_state == CT_WAIT_VSYNC) {
         frame_waiter();             // Avoid clock drift
         WriteTimer7(0);             // Reset timer
-        
+
         cntrIncrement(frame_counter);
         cntrSet(row_counter, 0);    // Reset row counter
 
@@ -319,7 +325,7 @@ void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
 
 void camCaptureRow(void) {
 
-    CRITICAL_SECTION_START;    
+    CRITICAL_SECTION_START;
     row_getter(row_buff, NATIVE_IMAGE_COLS);            
     CRITICAL_SECTION_END;
 
