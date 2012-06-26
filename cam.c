@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2011-2012, Regents of the University of California
  * All rights reserved.
  *
@@ -31,7 +31,7 @@
  *
  * by Humphrey Hu
  *
- * v.1.0
+ * v2.0
  *
  * Revisions:
  *   Humphrey Hu    2011-10-26  Initial implementation
