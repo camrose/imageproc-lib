@@ -169,8 +169,9 @@ void camRunCalib(void);
 // Set camera hardware auto exposure mode
 //void camSetAutoExposure(unsigned char);
 
-// Begin asynchronous capture procedure
+// Control asynchronous capture procedure
 void camStart(void);
+void camStop(void);
 
 // Retrieve camera parameters
 void camGetParams(CamParam params);

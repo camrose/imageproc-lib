@@ -184,6 +184,12 @@ void camStart(void) {
 
 }
 
+void camStop(void) {
+
+    DisableIntT7;
+
+}
+
 // Measures camera timing parameters
 void camRunCalib(void) {
 
