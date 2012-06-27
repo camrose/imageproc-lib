@@ -99,8 +99,6 @@ static int dead_zone; // Dead zone cutoff
 /*-----------------------------------------------------------------------------
  *          Declaration of static functions
 -----------------------------------------------------------------------------*/
-static void gyroUpdateAxes(void);
-
 static void gyroWrite(unsigned char regaddr, unsigned char data );
 static void gyroHandleISR(void);
 static inline unsigned int gyroReadString(unsigned length, unsigned char * data,
