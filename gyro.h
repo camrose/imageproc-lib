@@ -165,26 +165,62 @@ int gyroGetIntTemp(void);
 
 /*****************************************************************************
 * Function Name : gyroReadTemp
-* Description   : Read temperature from gyroscopeand save into internal buffer
+* Description   : Read temperature from gyroscope and save into internal buffer
 * Parameters    : None
 * Return Value  : None
 *****************************************************************************/
 void gyroReadTemp(void);
 
-// Raw value retrieval
+/*****************************************************************************
+* Function Name : gyroGetIntXYZ
+* Description   : Read integer gyro axis values
+* Parameters    : Pointer to array of 3 ints to write data to
+* Return Value  : None
+*****************************************************************************/
 void gyroGetIntXYZ(int* data);
+
+/*****************************************************************************
+* Function Name : gyroGetIntX/Y/Z
+* Description   : Read integer gyro axis value
+* Parameters    : None
+* Return Value  : Integer gyro axis value
+*****************************************************************************/
 int gyroGetIntX(void);
 int gyroGetIntY(void);
 int gyroGetIntZ(void);
 
-// Radian value retrieval
+/*****************************************************************************
+* Function Name : gyroGetRadXYZ
+* Description   : Read gyro axis values in floating point radians/sec
+* Parameters    : Pointer to array of 3 floats to write data to
+* Return Value  : None
+*****************************************************************************/
 void gyroGetRadXYZ(float* data);
+
+/*****************************************************************************
+* Function Name : gyroGetRadX/Y/Z
+* Description   : Read gyro axis value in floating point radians/sec
+* Parameters    : None
+* Return Value  : Floating point gyro axis value
+*****************************************************************************/
 float gyroGetRadX(void);
 float gyroGetRadY(void);
 float gyroGetRadZ(void);
 
-// Degree value retrieval
+/*****************************************************************************
+* Function Name : gyroGetDegXYZ
+* Description   : Read gyro axis values in floating point degrees/sec
+* Parameters    : Pointer to array of 3 floats to write data to
+* Return Value  : None
+*****************************************************************************/
 void gyroGetDegXYZ(float* data);
+
+/*****************************************************************************
+* Function Name : gyroGetDegX/Y/Z
+* Description   : Read gyro axis value in floating point degrees/sec
+* Parameters    : None
+* Return Value  : Floating point gyro axis value
+*****************************************************************************/
 float gyroGetDegX(void);
 float gyroGetDegY(void);
 float gyroGetDegZ(void);
