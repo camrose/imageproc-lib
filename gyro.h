@@ -33,9 +33,6 @@
  *
  * v.1.0
  *
- * Revisions:
- *  Stanley S. Baek      2010-05-30    Initial release
- *
  * Notes:
  *  - Uses an I2C port for communicating with the gyroscope chip
  *
@@ -78,6 +75,14 @@
 * Return Value  : None
 *****************************************************************************/
 void gyroSetup(void);
+
+/*****************************************************************************
+* Function Name : gyroSetDeadZone
+* Description   : Set integer data dead zone range.
+* Parameters    : Cutoff - Values in between -cutoff and +cutoff read as 0
+* Return Value  : None
+*****************************************************************************/
+void gyroSetDeadZone(int cutoff);
 
 /*****************************************************************************
 * Function Name : gyroSetSampleRate
@@ -166,52 +171,23 @@ int gyroGetIntTemp(void);
 *****************************************************************************/
 void gyroReadTemp(void);
 
-/*****************************************************************************
-* Function Name : gyroGetRadXYZ
-* Description   : Get X, Y, and Z gyro data in floating point format.
-*                 The unit is radian/s.
-* Parameters    : Array of 3 floating point numbers to store gyro data.
-* Return Value  : None
-*****************************************************************************/
+// Raw value retrieval
+void gyroGetIntXYZ(int* data);
+int gyroGetIntX(void);
+int gyroGetIntY(void);
+int gyroGetIntZ(void);
+
+// Radian value retrieval
 void gyroGetRadXYZ(float* data);
-
-/*****************************************************************************
-* Function Name : gyroGetRadX
-* Description   : Get the x-axis gyro data in floating point format.
-*                 The unit is radian/s.
-* Parameters    : None
-* Return Value  : The x-axis gyro data.
-*****************************************************************************/
 float gyroGetRadX(void);
-
-/*****************************************************************************
-* Function Name : gyroGetRadY
-* Description   : Get the y-axis gyro data in floating point format.
-*                 The unit is radian/s.
-* Parameters    : None
-* Return Value  : The y-axis gyro data.
-*****************************************************************************/
 float gyroGetRadY(void);
-
-/*****************************************************************************
-* Function Name : gyroGetRadZ
-* Description   : Get the z-axis gyro data in floating point format.
-*                 The unit is radian/s.
-* Parameters    : None
-* Return Value  : The z-axis gyro data.
-*****************************************************************************/
 float gyroGetRadZ(void);
 
-/*****************************************************************************
-* Function Name : gyroGetDegXYZ
-* Description   : Get X, Y, and Z gyro data in floating point format.
-*                 The unit is deg/s.
-* Parameters    : Array of 3 floating point numbers to store gyro data.
-* Return Value  : None
-* To Do         : Need to implement better sensor calibration and adjust the
-*                 raw data....
-*****************************************************************************/
+// Degree value retrieval
 void gyroGetDegXYZ(float* data);
+float gyroGetDegX(void);
+float gyroGetDegY(void);
+float gyroGetDegZ(void);
 
 /*****************************************************************************
 * Function Name : gyroToString
