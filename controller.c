@@ -54,8 +54,6 @@ void ctrlSetRef(CtrlPidParam pid, float ref) {
     pid->ref = ref;
 }
 
-
-
 float ctrlRunPid(CtrlPidParam pid, float y, DigitalFilter lpf) {
 
     if (pid->running == 0) return 0;
@@ -98,6 +96,17 @@ CtrlPidParam ctrlCreatePidParams(float ts) {
     pid->offset = 0;
     
     return pid;
+}
+
+void ctrlInitPidParams(CtrlPidParam pid, float ts) {
+
+    pid->ref = 0;
+    pid->running = 0;
+    pid->ts = ts;
+    pid->iold = 0;
+    pid->derrold = 0;
+    pid->offset = 0;
+
 }
 
 void ctrlSetPidParams(CtrlPidParam pid, float ref, float kp, float ki, float kd) {

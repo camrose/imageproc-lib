@@ -62,6 +62,7 @@ float ctrlGetRef(CtrlPidParam pid);
 void ctrlSetRef(CtrlPidParam pid, float ref);
 float ctrlRunPid(CtrlPidParam pid, float y, DigitalFilter lpf); 
 CtrlPidParam ctrlCreatePidParams(float ts);
+void ctrlInitPidParams(CtrlPidParam pid, float ts);
 void ctrlSetPidParams(CtrlPidParam pid, float ref, float kp, float ki, float kd);
 void ctrlSetPidOffset(CtrlPidParam pid, float offset);
 float ctrlGetPidOffset(CtrlPidParam pid);
