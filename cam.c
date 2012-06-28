@@ -61,7 +61,7 @@
 // Amount of time before an event to trigger timer
 #define ROW_ROW_OFFSET                  (6) // 384 cycles
 #define VSYNC_ROW_OFFSET                (6) // 384 cycles
-#define ROW_VSYNC_OFFSET                (8) // 512 cycles
+#define ROW_VSYNC_OFFSET                (10) // 640 cycles
 #define VSYNC_VSYNC_OFFSET              (8) // 512 cycles
 
 // The timer states describe what the timer is waiting for
