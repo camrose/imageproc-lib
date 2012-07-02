@@ -67,7 +67,6 @@
 #define REG_GYRO_ZOUT_L         (0x22)
 #define REG_PWR_MGM             (0x3E)
 
-// Scale factors
 #define LSB2DEG             (0.0695652174)  // 14.375 LSB/(deg/s)
 #define LSB2RAD             (0.00121414209)
 
@@ -183,6 +182,8 @@ void gyroRunCalib(unsigned int count){
     y_acc = 0;
     z_acc = 0;
 
+    CRITICAL_SECTION_START
+
     for (i = 0; i < count; i++) {
         gyroReadXYZ();
         x_acc += GyroData.int_data[1];
@@ -191,6 +192,8 @@ void gyroRunCalib(unsigned int count){
         delay_ms(1); // Sample at around 1kHz
     }
 
+    CRITICAL_SECTION_END
+
     offsets[0] = x_acc/count;
     offsets[1] = y_acc/count;
     offsets[2] = z_acc/count;
@@ -198,7 +201,7 @@ void gyroRunCalib(unsigned int count){
     GyroOffset.fdata[0] = 1.0*x_acc/count;
     GyroOffset.fdata[1] = 1.0*y_acc/count;
     GyroOffset.fdata[2] = 1.0*z_acc/count;
-    
+
 }
 
 float gyroGetFloatTemp(void) {
@@ -249,13 +252,13 @@ int gyroGetIntY(void) {
 
     return applyDeadZone(GyroData.int_data[2] - offsets[1]);
 
-}
+        }
 
 int gyroGetIntZ(void) {
 
     return applyDeadZone(GyroData.int_data[3] - offsets[2]);
 
-}
+    }
 
 void gyroGetRadXYZ(float* data) {
 
@@ -294,13 +297,13 @@ float gyroGetDegX(void) {
 
     return LSB2DEG*gyroGetIntX();
 
-}
+        }
 
 float gyroGetDegY(void) {
 
     return LSB2DEG*gyroGetIntY();
 
-}
+    }
 
 float gyroGetDegZ(void) {
 
@@ -312,7 +315,7 @@ unsigned char* gyroToString(void) {
 
     return GyroData.chr_data + 2;
 
-    }
+}
 
 void gyroDumpData(unsigned char* buffer) {
 
@@ -335,10 +338,10 @@ unsigned char* gyroReadXYZ(void) {
     gyroEndTx();
 
     GyroData.chr_data[2] = gyro_data[1];
-    GyroData.chr_data[3] = gyro_data[0];    
+    GyroData.chr_data[3] = gyro_data[0];
     GyroData.chr_data[4] = gyro_data[3];
-    GyroData.chr_data[5] = gyro_data[2];    
-    GyroData.chr_data[6] = gyro_data[5];    
+    GyroData.chr_data[5] = gyro_data[2];
+    GyroData.chr_data[6] = gyro_data[5];
     GyroData.chr_data[7] = gyro_data[4];
 
     return GyroData.chr_data + 2;
