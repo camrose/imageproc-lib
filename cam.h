@@ -63,7 +63,7 @@
 #define WINDOW_IMAGE_ROWS       (WINDOW_END_ROW - WINDOW_START_ROW)
 
 // Downsampling parameters
-#define DS_COL                  (1) // Capturing 1/DS_COL pixels
+#define DS_COL                  (2) // Capturing 1/DS_COL pixels
 #define DS_ROW                  (2) // Capturing 1/DS_ROW rows
 #define DS_FRAME                (1) // Capturing 1/DS_FRAME frames
 

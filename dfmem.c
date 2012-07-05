@@ -251,6 +251,7 @@ void dfmemWriteBuffer (unsigned char *data, unsigned int length,
     // 14 don't care bit + byte address bits
     MemAddr.address = (unsigned long)byte;
 
+    while(checkMutex() != MUTEX_FREE);
     // Write data to memory
     dfmemSelectChip();
 
@@ -461,6 +462,7 @@ unsigned char dfmemGetStatus (void)
 {
     unsigned char byte;
 
+    while(checkMutex() != MUTEX_FREE);
     dfmemSelectChip();
 
     dfmemWriteByte(0xD7);
