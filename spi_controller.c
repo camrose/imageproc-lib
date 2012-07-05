@@ -189,8 +189,8 @@ void spic2Reset(void) {
 
     SPI2_CS = SPI_CS_IDLE;          // Disable chip select
     SPIC2_DMAR_CONbits.CHEN = 0;    // Disable DMA module
-    SPI2STATbits.SPIROV = 0;        // Clear overwrite bit
     //stopTimer();                    // Stop watchdog timer
+>>>>>>> biomimetics/dfmem+dma
     port_status[1] = STAT_SPI_OPEN;    // Release lock on channel
 
 }
