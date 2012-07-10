@@ -41,31 +41,20 @@
  *  Andrew Pullin               2011-6-7    Added ability to query for chip
  *  w/Fernando L. Garcia Bermudez           size and flags to handle them.
  *  Andrew Pullin               2011-9-23   Added ability for deep power-down.
- *  Humphrey  Hu                2012-1-22   Enabled DMA on SPI port
- *  Andrew Pullin               2012-4-8    Adding auto flash geometry and
+ *                              2012-4-8    Adding auto flash geometry and
  *                                          some telemetry helper functions.
  *
  * Notes:
- *  - Uses an SPI port for communicating with the memory chip and DMA
- *    channels 4 and 5 with spi_controller.c
+ *  - Uses an SPI port for communicating with the memory chip.
  */
-
- // TODO (humhu) : Divide into generic nvmem (non-volatile memory) device class interface and
- //                DFMEM-specific driver to match radio class/driver
- // TODO (humhu) : Use a better non-ghetto mutex
- // TODO (humhu) : Add a rudimentary filesystem
- // TODO (humhu) : Add defines to switch between DMA/bitbang modes
-
-#include <stdlib.h>
-#include <string.h>
 
 #include "p33Fxxxx.h"
 #include "spi.h"
 #include "dfmem.h"
-#include "spi_controller.h"        // For DMA
 #include "utils.h"
+#include <stdlib.h>
+#include <string.h>
 
-// TODO (humhu) : Consolidate into some BSP header
 #if (defined(__IMAGEPROC1) || defined(__IMAGEPROC2) || defined(__MIKRO) || defined(__EXP16DEV))
 // MIKRO & EXP16DEV has no FLASHMEM, but needs this for compile
 
@@ -140,10 +129,6 @@
 #define ERASE_BLOCK     0x50
 #define ERASE_SECTOR    0x7C
 
-// Ghetto mutex constants
-#define MUTEX_LOCKED    (0x01)
-#define MUTEX_FREE        (0x00)
-
 /*-----------------------------------------------------------------------------
  *          Private variables
 -----------------------------------------------------------------------------*/
@@ -180,7 +165,6 @@ static inline void dfmemDeselectChip(void);
 static void dfmemSetupPeripheral(void);
 static void dfmemGeometrySetup(void);
 
-static void spiCallback(unsigned int irq_source);
 
 /*-----------------------------------------------------------------------------
  *          Public functions
@@ -189,9 +173,7 @@ static void spiCallback(unsigned int irq_source);
 void dfmemSetup(void)
 {
     dfmemSetupPeripheral();
-
-    spic2SetCallback(&spiCallback);
-
+    dfmemDeselectChip();
     dfmemGeometrySetup();
 }
 
@@ -220,9 +202,8 @@ void dfmemWrite (unsigned char *data, unsigned int length, unsigned int page,
     dfmemWriteByte(MemAddr.chr_addr[1]);
     dfmemWriteByte(MemAddr.chr_addr[0]);
 
-    // TODO (humhu) : Abstract this line into something like dfmemMassTransfer?
-    spic2MassTransmit(length, data, 2*length);
-
+    while (length--) { dfmemWriteByte(*data++); }
+    dfmemDeselectChip();
 }
 
 void dfmemWriteBuffer (unsigned char *data, unsigned int length,
@@ -241,7 +222,6 @@ void dfmemWriteBuffer (unsigned char *data, unsigned int length,
     // 14 don't care bit + byte address bits
     MemAddr.address = (unsigned long)byte;
 
-    while(checkMutex() != MUTEX_FREE);
     // Write data to memory
     dfmemSelectChip();
 
@@ -250,8 +230,9 @@ void dfmemWriteBuffer (unsigned char *data, unsigned int length,
     dfmemWriteByte(MemAddr.chr_addr[1]);
     dfmemWriteByte(MemAddr.chr_addr[0]);
 
-    spic2MassTransmit(length, data, 2*length);
+    while (length--) { dfmemWriteByte(*data++); }
 
+    dfmemDeselectChip();
 }
 
 void dfmemWriteBuffer2MemoryNoErase (unsigned int page, unsigned char buffer)
@@ -331,14 +312,9 @@ void dfmemRead (unsigned int page, unsigned int byte, unsigned int length,
     dfmemWriteByte(0x00);
     dfmemWriteByte(0x00);
 
-    unsigned int read_bytes;
-    read_bytes = spic2MassTransmit(length, NULL, 2*length);
-    dfmemSelectChip(); // Busy wait
-    
-    dfmemDeselectChip();
-    
-    spic2ReadBuffer(read_bytes, data);
+    while (length--) { *data++ = dfmemReadByte(); }
 
+    dfmemDeselectChip();
 }
 
 void dfmemReadPage2Buffer (unsigned int page, unsigned char buffer)
@@ -445,7 +421,6 @@ unsigned char dfmemGetStatus (void)
 {
     unsigned char byte;
 
-    while(checkMutex() != MUTEX_FREE);
     dfmemSelectChip();
 
     dfmemWriteByte(0xD7);
@@ -606,20 +581,6 @@ void dfmemGetGeometryParams(DfmemGeometry geo) {
  *          Private functions
 -----------------------------------------------------------------------------*/
 
-void spiCallback(unsigned int irq_source) {
-
-    if(irq_source == SPIC_TRANS_SUCCESS) {
-
-        dfmemDeselectChip();        
-
-    } else if(irq_source == SPIC_TRANS_TIMEOUT) {
-
-        spic2Reset();   // Reset hardware
-
-    }
-
-}
-
 // Sends a byte to the memory chip and returns the byte read from it
 //
 // Parameters   :   byte to send.
@@ -641,7 +602,7 @@ static inline unsigned char dfmemExchangeByte (unsigned char byte)
 // Parameters : byte to send.
 static inline void dfmemWriteByte (unsigned char byte)
 {
-    spic2Transmit(byte);
+    dfmemExchangeByte(byte);
 }
 
 // Receives a byte from the memory chip.
@@ -652,23 +613,14 @@ static inline void dfmemWriteByte (unsigned char byte)
 // Returns : received byte.
 static inline unsigned char dfmemReadByte (void)
 {
-    return spic2Receive();
+    return dfmemExchangeByte(0x00);
 }
 
 // Selects the memory chip.
-//static inline void dfmemSelectChip(void) { SPI_CS = 0; }
-
-static inline void dfmemSelectChip(void) {
-    spic2BeginTransaction();
-}
+static inline void dfmemSelectChip(void) { SPI_CS = 0; }
 
 // Deselects the memory chip.
-//static inline void dfmemDeselectChip(void) { SPI_CS = 1; }
-
-static inline void dfmemDeselectChip(void) {
-    spic2EndTransaction();
-}
-
+static inline void dfmemDeselectChip(void) { SPI_CS = 1; }
 
 // Initializes the SPIx bus for communicating with the memory.
 //
