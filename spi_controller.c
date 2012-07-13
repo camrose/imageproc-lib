@@ -362,7 +362,7 @@ void __attribute__((interrupt, no_auto_psv)) _DMA5Interrupt(void) {
 }    
 
 // ISR for timeout timer
-void __attribute__((interrupt, no_auto_psv)) _T6Interrupt(void) {
+/*void __attribute__((interrupt, no_auto_psv)) _T6Interrupt(void) {
     
     // Only one channel busy at a time
     if(port_status[0] == STAT_SPI_BUSY) {
@@ -379,7 +379,7 @@ void __attribute__((interrupt, no_auto_psv)) _T6Interrupt(void) {
         
     _T6IF = 0;
 
-}
+}*/
 
 
 static void setupDMASet1(void) {

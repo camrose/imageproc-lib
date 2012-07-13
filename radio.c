@@ -44,7 +44,7 @@
 #include "payload.h"
 #include "carray.h"
 #include "mac_packet.h"
-#include "sclock.h"
+#include "sys_clock.h"
 #include "timer.h"
 #include "led.h"
 #include "ppool.h"
@@ -62,7 +62,7 @@
 
 #define RADIO_DEFAULT_PACKET_RETRIES            (2)
 #define TX_TIMEOUT_MS                           (75)
-#define WATCHDOG_TIMEOUT_MS                     (1000)
+#define WATCHDOG_TIMEOUT_MS                     (2000)
 
 #define RADIO_CALIB_PERIOD                      (300000) // 5 minutes
 
@@ -344,7 +344,12 @@ void radioProcess(void) {
     if(!radioTxQueueEmpty()) {
 
         // Return if can't get to Tx state at the moment
-        if(!radioSetStateTx()) { return; }
+        if(!radioSetStateTx()) { 
+			return; 
+		} else {
+			Nop();
+			Nop();
+		}
         watchdogProgress();
         radioProcessTx(); // Process outgoing buffer
         return;
