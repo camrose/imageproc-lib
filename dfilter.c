@@ -86,11 +86,11 @@ DigitalFilter dfilterCreate(unsigned char order, FilterType type,
     DigitalFilter f = (DigitalFilter)malloc(sizeof(DigitalFilterStruct));
     f->order = order;
     f->type = type;
-    f->xcoef = (float*)malloc((order+1)*sizeof(float));
-    f->ycoef = (float*)malloc((order+1)*sizeof(float));
-    f->xold = (float*)malloc(order*sizeof(float));
-    f->yold = (float*)malloc(order*sizeof(float));
-    f->index = 0;
+//    f->xcoef = (float*)malloc((order+1)*sizeof(float));
+//    f->ycoef = (float*)malloc((order+1)*sizeof(float));
+//    f->xold = (float*)malloc(order*sizeof(float));
+//    f->yold = (float*)malloc(order*sizeof(float));
+    //f->index = 0;
 
     float x, y;
     for(i = 0; i < order; ++i) {
@@ -133,17 +133,17 @@ float* dfilterGetInputValues(DigitalFilter f)
 
 float dfilterGetLatestOutputValue(DigitalFilter f)
 {
-    return (f == NULL)? 0.0 : f->yold[f->index];
+    //return (f == NULL)? 0.0 : f->yold[f->index];
 }
 
 float dfilterGetLatestInputValue(DigitalFilter f)
 {
-    return (f == NULL)? 0.0 : f->xold[f->index];
+    //return (f == NULL)? 0.0 : f->xold[f->index];
 }
 
 unsigned char dfilterGetIndex(DigitalFilter f)
 {
-    return f->index;
+    //return f->index;
 }
 
 void dfilterDelete(DigitalFilter f)
