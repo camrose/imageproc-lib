@@ -39,7 +39,6 @@
  */
 
 #include "utils.h"
-#include "init_default.h"
 #include "radio.h"
 #include "payload.h"
 #include "carray.h"
@@ -376,16 +375,6 @@ void radioProcess(void) {
 
 
 // =========== Private functions ==============================================
-
-void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
-
-    // Disable and reset timer
-    DisableIntT3;
-    WriteTimer3(0);
-    radioReset();
-    _T3IF = 0;
-
-}
 
 static void radioReset(void) {
 

@@ -80,6 +80,7 @@ unsigned char radioGetRetries(void);
 
 RadioState radioGetState(void); // For debug..
 
+// Set radio timeout parameters
 void radioSetWatchdogState(unsigned char state);
 void radioSetWatchdogTime(unsigned int time);
 
