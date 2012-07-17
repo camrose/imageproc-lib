@@ -98,7 +98,7 @@ bams16_t attGetYawBAMS(void);
 /**
  * Get internal pose quaternion
  */
-void attGetQuat(Quaternion *quat);
+void attGetQuat(Quaternion* quat);
 
 /**
  * Fetch pitch, roll, and yaw in radians.

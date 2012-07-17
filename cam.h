@@ -84,6 +84,12 @@
 #ifndef __CAMERA_H
 #define __CAMERA_H
 
+
+// Image output parameters
+#define DS_IMAGE_COLS           (30) // NATIVE_IMAGE_COLS/DS_COL_PERIOD
+#define DS_IMAGE_ROWS           (30) // NATIVE_IMAGE_ROWS/DS_ROW_PERIOD
+
+
 // ============== Typedefs ====================================================
 
 // These are status codes handed to an irq handler registered to the camera

@@ -75,10 +75,6 @@
 #define DS_ROW_PERIOD           (4) // Capturing 1/4 rows
 #define DS_FRAME_PERIOD         (1) // Capturing 1/1 frames
 
-// Image output parameters
-#define DS_IMAGE_COLS           (30) // NATIVE_IMAGE_COLS/DS_COL_PERIOD
-#define DS_IMAGE_ROWS           (30) // NATIVE_IMAGE_ROWS/DS_ROW_PERIOD
-
 // Default camera capture timings for QQVGA no subsampling, 25 fps
 #define ROW_ROW_TIME                    (32)
 #define VSYNC_ROW_TIME                  (12800)
