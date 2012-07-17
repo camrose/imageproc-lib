@@ -145,6 +145,7 @@ void gyroRunCalib(unsigned int count){
     y = 0;
     z = 0;
 
+    CRITICAL_SECTION_START
     delay_ms(6); //From datasheet, standard settling time
 
     // throw away first 200 data. Sometimes they are bad at the beginning.
@@ -168,6 +169,8 @@ void gyroRunCalib(unsigned int count){
     GyroOffset.fdata[0] = 1.0*x/count;
     GyroOffset.fdata[1] = 1.0*y/count;
     GyroOffset.fdata[2] = 1.0*z/count;
+
+    CRITICAL_SECTION_END
 }
 
 float gyroGetFloatTemp(void) {

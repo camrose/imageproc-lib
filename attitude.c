@@ -92,6 +92,7 @@ void attSetup(float ts) {
     //measureXLScale(SCALE_CALIB_SAMPLES);
     xlReadXYZ();
     attZero();
+    is_ready = 1;
     attReset();
     swatchReset();
     swatchTic();
@@ -200,10 +201,10 @@ void attEstimatePose(void) {
         a_2 = floatToBams32Rad(norm*sample_period)/2;
         sina_2 = bams32SinFine(a_2);
 
-        displacement_quat.w = bams32CosFine(a_2)*norm;
-        displacement_quat.x = sina_2*rate[0];
-        displacement_quat.y = sina_2*rate[1];
-        displacement_quat.z = sina_2*rate[2];
+        displacement_quat.w = norm*bams32CosFine(a_2);
+        displacement_quat.x = rate[0]*sina_2;
+        displacement_quat.y = rate[1]*sina_2;
+        displacement_quat.z = rate[2]*sina_2;
         quatNormalize(&displacement_quat);
     }
 
