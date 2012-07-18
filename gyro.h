@@ -80,6 +80,15 @@
 void gyroSetup(void);
 
 /*****************************************************************************
+* Function Name : gyroSetDeadZone
+* Description   : Set integer data dead zone range.
+* Parameters    : Cutoff - Values in between -cutoff and +cutoff read as 0
+* Return Value  : None
+*****************************************************************************/
+void gyroSetDeadZone(int cutoff);
+
+
+/*****************************************************************************
 * Function Name : gyroSetSampleRate
 * Description   : Change sampling rate and LPF bandwidth.  Please refer to
 *                 ITG-3200 datasheet page 24 for valid values.
@@ -167,6 +176,24 @@ int gyroGetIntTemp(void);
 void gyroReadTemp(void);
 
 /*****************************************************************************
+* Function Name : gyroGetIntXYZ
+* Description   : Read integer gyro axis values
+* Parameters    : Pointer to array of 3 ints to write data to
+* Return Value  : None
+*****************************************************************************/
+void gyroGetIntXYZ(int* data);
+
+/*****************************************************************************
+* Function Name : gyroGetIntX/Y/Z
+* Description   : Read integer gyro axis value
+* Parameters    : None
+* Return Value  : Integer gyro axis value
+*****************************************************************************/
+int gyroGetIntX(void);
+int gyroGetIntY(void);
+int gyroGetIntZ(void);
+
+/*****************************************************************************
 * Function Name : gyroGetRadXYZ
 * Description   : Get X, Y, and Z gyro data in floating point format.
 *                 The unit is radian/s.
@@ -214,6 +241,16 @@ float gyroGetRadZ(void);
 void gyroGetDegXYZ(float* data);
 
 /*****************************************************************************
+* Function Name : gyroGetDegX/Y/Z
+* Description   : Read gyro axis value in floating point degrees/sec
+* Parameters    : None
+* Return Value  : Floating point gyro axis value
+*****************************************************************************/
+float gyroGetDegX(void);
+float gyroGetDegY(void);
+float gyroGetDegZ(void);
+
+/*****************************************************************************
 * Function Name : gyroToString
 * Description   : Get X, Y, and Z gyro data in raw string format.
 * Parameters    : None
@@ -241,6 +278,8 @@ void gyroDumpData(unsigned char* buffer);
 *                 representing the 3-axis gyro data.
 *****************************************************************************/
 unsigned char* gyroReadXYZ(void);
+
+void gyroReadAll(void);
 
 /*****************************************************************************
 * Function Name : gyroGetXYZ

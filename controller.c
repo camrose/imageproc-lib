@@ -57,31 +57,42 @@ void ctrlSetRef(CtrlPidParam pid, float ref) {
 
 
 float ctrlRunPid(CtrlPidParam pid, float y, DigitalFilter lpf) {
+    float p_term, d_term, i_term, u, p_error, d_error;
 
-    if (pid->running == 0) return 0;
+    if (!pid->running){ return 0.0; }
 
-    float p, d, u;
-    float derr = pid->gamma*pid->ref - y;  // error for derivative control
+    p_term = 0.0;
+    d_term = 0.0;
+    i_term = 0.0;
+    
+    d_error = pid->gamma*pid->ref - y;  // error for derivative control
+    p_error = pid->beta*pid->ref - y;    // proportional control gain
 
-    p = pid->kp*(pid->beta*pid->ref - y);    // proportional control gain
-
-    if (lpf == NULL) {
-        d = pid->kd*(derr - pid->derrold);
-    } else {
-        d = pid->kd*dfilterApply(lpf, derr - pid->derrold);
+    if(pid->kp != 0.0) {
+        p_term = pid->kp*p_error;    // proportional control gain
     }
 
-    u = pid->offset + p + pid->iold + d;
+    if(pid->ki != 0.0) {
+        pid->iold += p_error;
+        i_term = pid->ki*pid->iold;        
+    }
 
-    if (u > pid->umax) { // do not update pid->iold for ki = 0
+    if(pid->kd != 0.0) {
+        if(lpf == NULL) {
+            d_term = pid->kd*(d_error - pid->derrold);
+        } else {
+            d_term = pid->kd*dfilterApply(lpf, d_error - pid->derrold);
+        }
+        pid->derrold = d_error;
+    }
+
+    u = pid->offset + p_term + i_term + d_term;
+
+    if (u > pid->umax) {
         u = pid->umax;
-    } else if (u < pid->umin) {  // do not update pid->iold for ki = 0
+    } else if (u < pid->umin) {
         u = pid->umin;
-    } else {    // update pid->iold with ki
-        pid->iold += pid->ki*(pid->ref - y);
     }
-
-    pid->derrold = derr;
     
     return u;
 
@@ -98,6 +109,17 @@ CtrlPidParam ctrlCreatePidParams(float ts) {
     pid->offset = 0;
     
     return pid;
+}
+
+void ctrlInitPidParams(CtrlPidParam pid, float ts) {
+
+    pid->ref = 0;
+    pid->running = 0;
+    pid->ts = ts;
+    pid->iold = 0;
+    pid->derrold = 0;
+    pid->offset = 0;
+
 }
 
 void ctrlSetPidParams(CtrlPidParam pid, float ref, float kp, float ki, float kd) {
