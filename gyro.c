@@ -122,6 +122,8 @@ void gyroSetup(void) {
     // it is NOT USED at this moment.
     ConfigINT1(RISING_EDGE_INT & EXT_INT_DISABLE & EXT_INT_PRI_3);
 
+    dead_zone = DEFAULT_DEAD_ZONE;
+
     delay_ms(25);   // power up delay, may not need...
     //gyroWrite(REG_DLPF_FS, 0x1A);  // 2000 deg/sec, 1 kHz Sampling rate, 98Hz LPF
     gyroWrite(REG_DLPF_FS, 0x19);  // 2000 deg/sec, 1 kHz Sampling rate, 196Hz LPF
@@ -178,6 +180,7 @@ void gyroRunCalib(unsigned int count){
     CRITICAL_SECTION_START
 
     for (i = 0; i < count; ++i) {
+        gyroReadXYZ();
         x_acc += GyroData.int_data[1];
         y_acc += GyroData.int_data[2];
         z_acc += GyroData.int_data[3];
@@ -194,7 +197,6 @@ void gyroRunCalib(unsigned int count){
     GyroOffset.fdata[1] = 1.0*y_acc/count;
     GyroOffset.fdata[2] = 1.0*z_acc/count;
 
-    CRITICAL_SECTION_END
 }
 
 float gyroGetFloatTemp(void) {

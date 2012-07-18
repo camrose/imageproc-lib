@@ -41,7 +41,10 @@
 // At this moment, only floating point is available.
 // It would be nice to have different types such as double precision
 // and fixed point numbers.
-typedef enum {FILTER_TYPE_FLOAT, FILTER_TYPE_DOUBLE} FilterType;
+typedef enum {
+    FILTER_TYPE_FLOAT = 0,
+    FILTER_TYPE_DOUBLE
+} FilterType;
 
 /*
  * xcoef -> b0 : b1 : b2 : ... : bn
@@ -55,14 +58,16 @@ typedef enum {FILTER_TYPE_FLOAT, FILTER_TYPE_DOUBLE} FilterType;
  * Then we need to replace y[k-n] and x[k-n] with y[k] and x[k], respectively.
  * The new index value should be updated to locate x[k-n] (or x[k] after replacing)
  */
+
+#define MAX_FILTER_ORDER        (5)
+
 typedef struct {
     unsigned char order;     // order = n
     FilterType type;        // float, double, or fixed point (short or long)
-    float *xcoef;  // # of coeffs = n+1
-    float *ycoef;  // # of coeffs = n
-    float *yold;    // n prev y values
-    float *xold;    // n prev x values
-    unsigned char index;
+    float xcoef[MAX_FILTER_ORDER + 1];  // # of coeffs = n+1
+    float ycoef[MAX_FILTER_ORDER + 1];  // # of coeffs = n
+    float yold[MAX_FILTER_ORDER];       // n prev y values
+    float xold[MAX_FILTER_ORDER];       // n prev x values    
 } DigitalFilterStruct;
 
 typedef DigitalFilterStruct* DigitalFilter;

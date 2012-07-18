@@ -42,6 +42,9 @@
 
 #include <stdlib.h>
 #include "dfilter.h"
+#include <string.h>
+
+#define NaN(f) ( ((((char *)&f)[3] & 0x7f) == 0x7f ) && (((char *)&f)[2] & 0x80) )
 
 
 /*-----------------------------------------------------------------------------
@@ -50,18 +53,25 @@
 
 float dfilterApply(DigitalFilter f, float x)
 {
-    int i;
-    //unsigned char idx = f->index;
-    float y = f->xcoef[0] * x;
+    float y;
+    unsigned int i;
 
-    for (i = 1; i <= f->order; ++i) {
-        y += f->xcoef[i]*f->xold[f->index] - f->ycoef[i]*f->yold[f->index];
-        f->index = (f->index == f->order-1)? 0 : f->index + 1;
+    f->xold[0] = x;
+    y = 0;
+
+    // yocoef[0] should always equal 0
+    for (i = 0; i < f->order; ++i) {
+        y += f->xcoef[i]*f->xold[i] - f->ycoef[i]*f->yold[i];
     }
 
-    f->index = (f->index == 0)? f->order - 1 : f->index - 1;
-    f->xold[f->index] = x;
-    f->yold[f->index] = y;
+    memset(&f->xold[1], &f->xold[0], sizeof(float)*(f->order - 1));
+    memset(&f->yold[1], &f->yold[0], sizeof(float)*(f->order - 1));
+
+    f->yold[1] = y;
+
+    if(NaN(y)) {
+        i = 0;
+    }
 
     return y;
 }
@@ -96,6 +106,17 @@ DigitalFilter dfilterCreate(unsigned char order, FilterType type,
     return f;
 }
 
+void dfilterInit(DigitalFilter f, unsigned char order, FilterType type,
+                    float* xcoeffs, float* ycoeffs) {
+
+    memset(f, 0x00, sizeof(DigitalFilterStruct));
+    
+    f->order = order;
+    f->type = type;
+    memcpy(&f->xcoef, xcoeffs, sizeof(float)*(order + 1));
+    memcpy(&f->ycoef, ycoeffs, sizeof(float)*(order + 1));
+    
+}
 
 float* dfilterGetOutputValues(DigitalFilter f)
 {
