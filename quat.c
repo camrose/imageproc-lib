@@ -31,10 +31,11 @@
  *
  * by Humphrey Hu
  *
- * v-> beta
+ * v 0.2
  *
  * Revisions:
- *  Humphrey      2011-10-07    Initial release
+ *  Humphrey Hu      2011-10-07    Initial release
+ *  Humphrey Hu     2012-06-29      Updated implementations
  *                      
  * 
  */

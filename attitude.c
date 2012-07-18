@@ -47,6 +47,7 @@
 #include <math.h>
 #include "bams.h"
 #include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 
 #define QUAT_POLE_LIMIT         (0.499)
