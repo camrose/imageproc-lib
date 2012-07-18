@@ -55,8 +55,8 @@
 #include <stdlib.h>
 
 #define RADIO_DEFAULT_SRC_ADDR                  (0x1101)
-#define RADIO_DEFAULT_SRC_PAN                   (0x1001)
-#define RADIO_DEFAULT_CHANNEL                   (0x15)
+#define RADIO_DEFAULT_SRC_PAN                   (0x1005)
+#define RADIO_DEFAULT_CHANNEL                   (0x12)
 #define RADIO_DEFAULT_RETRIES                   (3)
 
 #define RADIO_DEFAULT_PACKET_RETRIES            (2)
