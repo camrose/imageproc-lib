@@ -70,7 +70,7 @@
 
 #define DEFAULT_DEAD_ZONE   (0)             // Initial dead zone (0 disabled)
 #define INITIAL_CALIB_NUM   (300)           // Initial calibration samples
-#define I2C_TIMEOUT_BYTES   (100)           // Number of bytes for I2C timeout
+#define I2C_TIMEOUT_BYTES   (200)           // Number of bytes for I2C timeout
 
 /*-----------------------------------------------------------------------------
  *          Static Variables
