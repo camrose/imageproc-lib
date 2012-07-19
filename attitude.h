@@ -38,6 +38,7 @@
 #define __ATTITUDE_H
 
 #include "bams.h"
+#include "quat.h"
 
 typedef struct {
     float yaw;
@@ -98,7 +99,7 @@ bams16_t attGetYawBAMS(void);
 /**
  * Get internal pose quaternion
  */
-void attGetQuat(Quaternion* quat);
+void attGetQuat(Quaternion *quat);
 
 /**
  * Fetch pitch, roll, and yaw in radians.
