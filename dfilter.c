@@ -87,10 +87,10 @@ DigitalFilter dfilterCreate(unsigned char order, FilterType type,
     DigitalFilter f = (DigitalFilter)malloc(sizeof(DigitalFilterStruct));
     f->order = order;
     f->type = type;
-//    f->xcoef = (float *)malloc((order+1)*sizeof(float));
-//    f->ycoef = (float *)malloc((order+1)*sizeof(float));
-//    f->xold = (float *)malloc(order*sizeof(float));
-//    f->yold = (float *)malloc(order*sizeof(float));
+    f->xcoef = (float *)malloc((order+1)*sizeof(float));
+    f->ycoef = (float *)malloc((order+1)*sizeof(float));
+    f->xold = (float *)malloc(order*sizeof(float));
+    f->yold = (float *)malloc(order*sizeof(float));
 
     for(i = 0; i < order; ++i) {
         f->xold[i] = 0;

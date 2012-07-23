@@ -64,10 +64,10 @@ typedef enum {
 typedef struct {
     unsigned char order;     // order = n
     FilterType type;        // float, double, or fixed point (short or long)
-    float xcoef[MAX_FILTER_ORDER + 1];  // # of coeffs = n+1
-    float ycoef[MAX_FILTER_ORDER + 1];  // # of coeffs = n
-    float yold[MAX_FILTER_ORDER];       // n prev y values
-    float xold[MAX_FILTER_ORDER];       // n prev x values    
+    float* xcoef;//[MAX_FILTER_ORDER + 1];  // # of coeffs = n+1
+    float* ycoef;//[MAX_FILTER_ORDER + 1];  // # of coeffs = n
+    float* yold;//[MAX_FILTER_ORDER];       // n prev y values
+    float* xold;//[MAX_FILTER_ORDER];       // n prev x values
 } DigitalFilterStruct;
 
 typedef DigitalFilterStruct* DigitalFilter;
