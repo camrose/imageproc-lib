@@ -190,7 +190,7 @@ void dfmemEraseSector(unsigned int page);
 //
 //  NOTE (fgb) : Errata mentions it could be faulty and recommends
 //               using Page or Block Erase commands instead.
-//void dfmemEraseChip(void);
+void dfmemEraseChip(void);
 
 // Requests dfmem status register and returns its ready(RDY) bit.
 //
