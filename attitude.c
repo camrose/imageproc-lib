@@ -47,6 +47,7 @@
 #include <math.h>
 #include "bams.h"
 #include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 
 #define QUAT_POLE_LIMIT         (0.499)
@@ -224,7 +225,7 @@ void attEstimatePose(void) {
     }
 
     // Apply displacement to pose
-    quatMult(&displacement_quat, &pose_quat, &pose_quat);
+    quatMult(&pose_quat, &displacement_quat, &pose_quat);
 
     // Normalize pose quaternion to account for unnormalized displacement quaternion
     quatNormalize(&pose_quat);    

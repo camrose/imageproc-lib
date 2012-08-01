@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010, Regents of the University of California
+/**
+ * Copyright (c) 2011-2012, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,64 +27,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * Quaternion Library
+ * OV7660 Device Parameters
  *
  * by Humphrey Hu
  *
- * v. beta
+ * v0.1
  *
- * Revisions:
- *  Humphrey      2011-10-07    Initial release
- *                      
- * 
  */
 
- #ifndef __QUATERNION_H
- #define __QUATERNION_H
- 
- typedef struct {
-	float w;
-	float x;
-	float y;
-	float z;
- } Quaternion;
+#ifndef __OV7660_H
+#define __OV7660_H
 
- /**
- * Copy a quaternion
- * @param dst - Pointer to destination
- * @param src - Pointer to source
- */
-void quatCopy(Quaternion *dst, Quaternion *src);
+#define NATIVE_CCD_COLS         (640)
+#define NATIVE_CCD_ROWS         (480)
 
-/**
- * Multiply two quaternions (q1*q2)
- * @param q1 - Pointer to operand 1
- * @param q2 - Pointer to operand 2
- * @param result - Pointer to result storage
- * @note 1700 cycles
- */
-void quatMult(Quaternion *q1, Quaternion *q2, Quaternion *result);
+// Hardware output parameters
+#define NATIVE_IMAGE_COLS       (160)
+#define NATIVE_IMAGE_ROWS       (120)
+#define FRAMERATE               (25)
 
-/**
- * Normalize a quaternion
- * @param q - Pointer to quaternion to normalize
- * @note 1200 cycles
- */
-void quatNormalize(Quaternion *q);
-
-/**
- * Conjugate a quaternion
- * @param q - Pointer to operand
- * @param result - Pointer to result storage
- */
-void quatConj(Quaternion *q, Quaternion *result);
-
-/**
- * Rotate a vector by a quaternion
- * @param q1 - Pointer to rotation quaternion
- * @param v - Pointer to vector to rotate (w component should be 0)
- * @param result - Pointer to result storage
- */
-void quatRotate(Quaternion *q1, Quaternion *v, Quaternion *result);
 
 #endif
+

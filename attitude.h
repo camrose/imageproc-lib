@@ -67,12 +67,6 @@ void attReset(void);
 void attZero(void);
 
 /**
- * Fetch the pitch angle in radians.
- * @return Pitch angle in radians
- */
-float attGetPitch(void);
-
-/**
  * Fetch the roll angle in radians.
  * @return Roll angle in radians
  */
