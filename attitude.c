@@ -225,7 +225,7 @@ void attEstimatePose(void) {
     }
 
     // Apply displacement to pose
-    quatMult(&displacement_quat, &pose_quat, &pose_quat);
+    quatMult(&pose_quat, &displacement_quat, &pose_quat);
 
     // Normalize pose quaternion to account for unnormalized displacement quaternion
     quatNormalize(&pose_quat);    
