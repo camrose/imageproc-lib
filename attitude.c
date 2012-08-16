@@ -191,8 +191,8 @@ void attEstimatePose(void) {
     if(!is_running) { return; }
 
     gyroGetRadXYZ(rate);    // Get last read gyro values
-    rate[1] = -rate[1];     // Reorient axes
-    rate[2] = -rate[2];
+    //rate[1] = -rate[1];     // Reorient axes
+    //rate[2] = -rate[2];
 
     //timestamp = swatchToc(); // Record timestamp
 
