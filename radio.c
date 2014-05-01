@@ -56,6 +56,7 @@
 
 #define RADIO_DEFAULT_SRC_ADDR                  (0x1101)
 #define RADIO_DEFAULT_SRC_PAN                   (0x1005)
+//#define RADIO_DEFAULT_DST                       (0x1111)
 #define RADIO_DEFAULT_CHANNEL                   (0x12)
 #define RADIO_DEFAULT_RETRIES                   (3)
 
