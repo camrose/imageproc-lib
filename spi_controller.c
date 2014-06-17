@@ -67,9 +67,9 @@
 #define SPIC2_DMAR_CONbits      (DMA4CONbits)
 #define SPIC2_DMAR_CNT          (DMA4CNT)
 #define SPIC2_DMAR_REQbits      (DMA4REQbits)
-#define SPIC2_DMAW_CONbits      (DMA5CONbits)
-#define SPIC2_DMAW_CNT          (DMA5CNT)
-#define SPIC2_DMAW_REQbits      (DMA5REQbits)
+//#define SPIC2_DMAW_CONbits      (DMA5CONbits)
+//#define SPIC2_DMAW_CNT          (DMA5CNT)
+//#define SPIC2_DMAW_REQbits      (DMA5REQbits)
 
 #define SPI1_REQ_VAL            (0x00A) // SPI1 Transfer Done Interrupt
 #define SPI2_REQ_VAL            (0x021) // SPI2 Transfer Done Interrupt
@@ -284,18 +284,18 @@ unsigned int spic2MassTransmit(unsigned int len, unsigned char *buff, unsigned i
     if(buff != NULL) {
         memcpy(spic2_tx_buff, buff, len);   // Copy data to DMA memory
         SPIC2_DMAR_CONbits.NULLW = 0;   // Ensure null writes are disabled
-        SPIC2_DMAW_CONbits.NULLW = 0;
+//        SPIC2_DMAW_CONbits.NULLW = 0;
     } else {    
         SPIC2_DMAR_CONbits.NULLW = 1;   // Else use null write mode
-        SPIC2_DMAW_CONbits.NULLW = 1;
+//        SPIC2_DMAW_CONbits.NULLW = 1;
     }
     
     SPIC2_DMAR_CNT = len;   // Set number of bytes to send
-    SPIC2_DMAW_CNT = len;
+//    SPIC2_DMAW_CNT = len;
     //startTimer(timeout);        // Start timeout timer
     SPIC2_DMAR_CONbits.CHEN = 1;    // Begin transmission
-    SPIC2_DMAW_CONbits.CHEN = 1;
-    SPIC2_DMAW_REQbits.FORCE = 1;
+//    SPIC2_DMAW_CONbits.CHEN = 1;
+//    SPIC2_DMAW_REQbits.FORCE = 1;
     return len;
     
 }
@@ -350,11 +350,11 @@ void __attribute__((interrupt, no_auto_psv)) _DMA4Interrupt(void) {
 
 // ISR for DMA5 interrupt, currently DMAW for channel 2
 // Currently not used, though it may be useful for debugging
-void __attribute__((interrupt, no_auto_psv)) _DMA5Interrupt(void) {
-    
-    _DMA5IF = 0;
-    
-}    
+//void __attribute__((interrupt, no_auto_psv)) _DMA5Interrupt(void) {
+//
+//    _DMA5IF = 0;
+//
+//}
 
 static void setupDMASet1(void) {
 
@@ -423,23 +423,23 @@ static void setupDMASet2(void) {
     EnableIntDMA4;
     _DMA4IF  = 0;        // Clear DMA interrupt flag
     
-    DMA5CON =   DMA5_REGISTER_POST_INCREMENT &     // Increment address after each byte
-                DMA5_ONE_SHOT &                 // Stop module after transfer complete
-                DMA5_TO_PERIPHERAL &            // Send data to peripheral from memory
-                DMA5_SIZE_BYTE &                 // Byte-size transaction
-                DMA5_INTERRUPT_BLOCK &             // Interrupt after entire transaction
-                DMA5_NORMAL &                     //
-                DMA5_MODULE_OFF;                // Start module disabled
-    
-    DMA5REQ = SPI2_REQ_VAL;
-    DMA5STA = __builtin_dmaoffset(spic2_tx_buff);
-    DMA5STB = __builtin_dmaoffset(spic2_tx_buff);
-    DMA5PAD = (volatile unsigned int) &SPI2BUF;
-    DMA5CNT = 0; // Default
-    
-    priority = DMA5_INT_PRI_5;
-    SetPriorityIntDMA5(priority);
-    DisableIntDMA5; // Only need one of the DMA interrupts
-    _DMA5IF  = 0;        // Clear DMA interrupt
+//    DMA5CON =   DMA5_REGISTER_POST_INCREMENT &     // Increment address after each byte
+//                DMA5_ONE_SHOT &                 // Stop module after transfer complete
+//                DMA5_TO_PERIPHERAL &            // Send data to peripheral from memory
+//                DMA5_SIZE_BYTE &                 // Byte-size transaction
+//                DMA5_INTERRUPT_BLOCK &             // Interrupt after entire transaction
+//                DMA5_NORMAL &                     //
+//                DMA5_MODULE_OFF;                // Start module disabled
+//
+//    DMA5REQ = SPI2_REQ_VAL;
+//    DMA5STA = __builtin_dmaoffset(spic2_tx_buff);
+//    DMA5STB = __builtin_dmaoffset(spic2_tx_buff);
+//    DMA5PAD = (volatile unsigned int) &SPI2BUF;
+//    DMA5CNT = 0; // Default
+//
+//    priority = DMA5_INT_PRI_5;
+//    SetPriorityIntDMA5(priority);
+//    DisableIntDMA5; // Only need one of the DMA interrupts
+//    _DMA5IF  = 0;        // Clear DMA interrupt
     
 }
