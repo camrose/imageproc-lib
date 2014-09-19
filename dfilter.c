@@ -42,6 +42,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "dfilter.h"
 
 //#define NaN(f) ( ((((char *)&f)[3] & 0x7f) == 0x7f ) && (((char *)&f)[2] & 0x80) )

@@ -46,7 +46,7 @@
 
 //Create PID object
 pidObj amsPID[nPIDS];
-extern ENCPOS encPos[NUM_ENC];
+extern EncObj encPos[NUM_ENC];
 
 //Hardware PID
 fractional ams_abcCoeffs[nPIDS][3] __attribute__((section(".xbss, bss, xmemory")));
