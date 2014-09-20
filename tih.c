@@ -55,7 +55,7 @@ static void tiHSetupPeripheral(void) {
     PTCONvalue = PWM_EN & PWM_IDLE_CON & PWM_OP_SCALE1 &
                  PWM_IPCLK_SCALE1 & PWM_MOD_FREE;
     PWMCON1value = PWM_MOD1_IND & PWM_PEN1L & PWM_MOD2_IND & PWM_PEN2L &
-                 PWM_MOD3_IND & PWM_PDIS3L & PWM_MOD4_IND & PWM_PEN4L;
+                 PWM_MOD3_IND & PWM_PDIS3L & PWM_MOD4_IND & PWM_PEN4L; //PWM3H now servo control
     PWMCON2value = PWM_SEVOPS4 & PWM_OSYNC_TCY & PWM_UEN;
     ConfigIntMCPWM(PWM_INT_DIS & PWM_FLTA_DIS_INT & PWM_FLTB_DIS_INT);
 
