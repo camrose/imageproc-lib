@@ -121,10 +121,10 @@ static CamFrameWaiter frame_waiter;
 
 // ==== Public functions ======================================================
 
-void camSetup(CamFrame frames, unsigned int num_frames) {
+void camSetup(CamFrame frames, unsigned int num_frames) {    
 
-    unsigned int i;
-
+    unsigned int i;    
+    
     setupTimer7();  // Set up timer peripheral
 
     next_row_index = 0;
@@ -144,15 +144,15 @@ void camSetup(CamFrame frames, unsigned int num_frames) {
     for(i = 0; i < num_frames; i++) {
         camReturnFrame(&frames[i]);
     }
-
+    
     ovcamSetup();   // Set up camera device
     irq_handler = NULL;   // Set up function pointers
     row_getter = &ovcamGetPixels;
     frame_waiter = &ovcamWaitForNewFrame;
     frame_started = 0;
-
+    
     is_ready = 1;
-
+    
     camRunCalib();  // Measure timing parameters
 
 }
@@ -160,7 +160,7 @@ void camSetup(CamFrame frames, unsigned int num_frames) {
 void camGetParams(CamParam params) {
 
     if(params == NULL) { return; }
-
+    
     params->type = 0; // Not implemented yet!
     params->active = is_ready;
     params->frame_start = frame_start;
@@ -296,7 +296,7 @@ void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
             PR7 = vsync_vsync_time;         // Wait for next frame
         }
         frame_start = sclockGetGlobalTicks();
-
+        
     } else if(ct_state == CT_WAIT_ROW) {
 
         camCaptureRow();            // Capture row
@@ -326,7 +326,7 @@ void __attribute__((interrupt, no_auto_psv)) _T7Interrupt(void) {
 void camCaptureRow(void) {
 
     CRITICAL_SECTION_START;
-    row_getter(row_buff, NATIVE_IMAGE_COLS);
+    row_getter(row_buff, NATIVE_IMAGE_COLS);            
     CRITICAL_SECTION_END;
 
 }
@@ -335,15 +335,15 @@ void processRow(void) {
 
     unsigned int i, j, k, acc;
     unsigned char *src_data, *dst_data;
-
-    if(cntrRead(row_counter) == 0) {
+    
+    if(cntrRead(row_counter) == 0) {        
         if(current_frame == NULL) {
             current_frame = getEmptyFrame(); // Load new frame
         }
     }
-
+    
     if(current_frame == NULL) { return; }
-
+    
     dst_data = current_frame->pixels[next_row_index]; // Write into current frame
     src_data = row_buff;
 
@@ -355,8 +355,8 @@ void processRow(void) {
         }
         dst_data[i] = acc/DS_COL;
     }
-
-    next_row_index++;
+        
+    next_row_index++;    
 
     // If all rows are filled, add the frame to the full frame buffer
     if(next_row_index >= DS_IMAGE_ROWS) {
@@ -364,7 +364,7 @@ void processRow(void) {
         current_frame->timestamp = sclockGetLocalTicks();
         enqueueFullFrame(current_frame); // Add to output queue
         current_frame = NULL;
-        next_row_index = 0;
+        next_row_index = 0;        
     }
 
 }

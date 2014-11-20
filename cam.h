@@ -34,10 +34,10 @@
  * v2.0
  *
  * Usage:
- *
+ *  
  *  static CamFrameStruct frame_buffer[2];
  *  CamFrame frame;
-
+ 
  *  camSetup(frame_buffer, 2);  // Hand camera driver allocated frames
  *  camStart();                 // Begin asynchronous capture
  *
@@ -59,7 +59,7 @@
 #define WINDOW_START_ROW        (0)   // Start capture at this row
 #define WINDOW_END_ROW          (120) // End capture at this row
 
-#define WINDOW_IMAGE_COLS       (WINDOW_END_COL - WINDOW_START_COL)
+#define WINDOW_IMAGE_COLS       (WINDOW_END_COL - WINDOW_START_COL)       
 #define WINDOW_IMAGE_ROWS       (WINDOW_END_ROW - WINDOW_START_ROW)
 
 // Downsampling parameters
@@ -88,13 +88,13 @@ typedef enum {
 typedef unsigned char CamRow[DS_IMAGE_COLS];
 typedef CamRow RowArray[DS_IMAGE_ROWS];
 
-typedef struct {
+typedef struct {    
     unsigned long timestamp;
     unsigned int frame_num;
     RowArray pixels;
-} CamFrameStruct;
+} CamFrameStruct; 
 typedef CamFrameStruct* CamFrame;
-
+ 
 typedef struct {
     unsigned char type;
     unsigned char active;
