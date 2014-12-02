@@ -269,7 +269,7 @@ void ovcamSetupOV7660 (void)
     ovcamWriteRegister(COM13,0x90); // Gamma used for raw data before interpolation
     ovcamWriteRegister(EDGE,0x29);
     ovcamWriteRegister(COM15,0xC1); // Output Range 00-FF
-    ovcamWriteRegister(COM16,0x20); // Edge Enhancement for YUV
+    ovcamWriteRegister(COM16,0x30); // Edge Enhancement for YUV 0x20
     ovcamWriteRegister(DBLV,0x0A);
     ovcamWriteRegister(0xA1,0xC8);
 
