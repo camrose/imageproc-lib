@@ -247,8 +247,8 @@ void ovcamSetupOV7660 (void)
     ovcamWriteRegister(HSTART,0x23); // Horizontal Frame Start (8 MSb's)
     ovcamWriteRegister(HSTOP,0x4B);  // Horizontal Frame Stop (8 MSb's)
     ovcamWriteRegister(HREF,0xBF);   // 3 LSb's for Horizontal Frame Start/Stop
-    ovcamWriteRegister(VSTRT,0x02);  // Vertical Frame Start (8 MSb's)
-    ovcamWriteRegister(VSTOP,0x3E);  // Vertical Frame Stop (8 MSb's)
+    ovcamWriteRegister(VSTRT,0x32);  // Vertical Frame Start (8 MSb's)
+    ovcamWriteRegister(VSTOP,0x46);  // Vertical Frame Stop (8 MSb's)
     ovcamWriteRegister(VREF,0x00);   // 2 LSb's for Vertical Frame Start/Stop
 
     ovcamWriteRegister(COM5,0x84); // Enable higher frame rates

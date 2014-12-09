@@ -43,7 +43,7 @@
 
 // Hardware output parameters
 #define NATIVE_IMAGE_COLS       (160)
-#define NATIVE_IMAGE_ROWS       (120)
+#define NATIVE_IMAGE_ROWS       (40)
 #define FRAMERATE               (25)
 
 

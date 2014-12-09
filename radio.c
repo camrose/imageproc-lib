@@ -335,7 +335,7 @@ void radioProcess(void) {
 
     if(watchdog_state) {
         if(sclockGetLocalMillis() - progress_timestamp > WATCHDOG_TIMEOUT_MS) {
-            //radioReset();
+            radioReset();
             return;
         }
     }

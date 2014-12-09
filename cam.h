@@ -57,7 +57,7 @@
 #define WINDOW_START_COL        (5)   // Start capture at this col
 #define WINDOW_END_COL          (155) // End capture at this col
 #define WINDOW_START_ROW        (0)   // Start capture at this row
-#define WINDOW_END_ROW          (120) // End capture at this row
+#define WINDOW_END_ROW          (40) // End capture at this row
 
 #define WINDOW_IMAGE_COLS       (WINDOW_END_COL - WINDOW_START_COL)       
 #define WINDOW_IMAGE_ROWS       (WINDOW_END_ROW - WINDOW_START_ROW)
