@@ -71,27 +71,27 @@ static void adcLineSetupPeripheral(void) {
 
     AD2CON1bits.ADON = 0;       //disable
     AD2CON1bits.ADSIDL = 0;     //continue in idle mode
-    AD2CON1bits.AD12B = 1;      //10 bit mode
-    AD2CON1bits.FORM = 0b00;    //integer (0000 dddd dddd dddd) format output
-    AD2CON1bits.SSRC = 0b111;   //Sample clock source based on PWM
+    AD2CON1bits.AD12B = 0;      //10 bit mode
+    AD2CON1bits.FORM = 0b00;    //integer (0000 00dd dddd dddd) format output
+    AD2CON1bits.SSRC = 0b111;   //Internal clock source
     AD2CON1bits.SIMSAM = 1;     //Sample channels simultaneously
     AD2CON1bits.ASAM = 1;       //Auto sampling on
     AD2CON1bits.ADDMABM = 1;
 
     AD2CON2bits.VCFG = 0b000;   //Vdd is pos. ref and Vss is neg. ref.
     AD2CON2bits.CSCNA = 1;      //scan inputs
-    AD2CON2bits.CHPS = 0b00;    //Convert channels 0 and 1
-    AD2CON2bits.SMPI = 0b0000;  //Interrupt after 3 conversions (depends on CHPS and SIMSAM)
+    AD2CON2bits.CHPS = 0b00;    //Convert channel 0
+    AD2CON2bits.SMPI = 0b0000;  //Interrupt after every conversion (depends on CHPS and SIMSAM)
     AD2CON2bits.BUFM = 0;       //Always fill conversion buffer from first element
-    AD2CON2bits.ALTS = 0;       //Alternate MUXes for analog input selection
+    AD2CON2bits.ALTS = 0;       //Do not alternate MUXes for analog input selection
 
     AD2CON3bits.ADRC = 0;       //Derive conversion clock from system clock
 //    AD1CON3bits.SAMC = 0b00001; //Auto sampling clock period is one Tad
-    AD2CON3bits.ADCS = 0b00000001; // Each TAD is 3 Tcy
+    AD2CON3bits.ADCS = 0b00000001; // Each TAD is 2 Tcy
 
-    AD2PCFGL = 0xFFDF;          //Enable AN0 - AN3 as analog inputs
+    AD2PCFGL = ENABLE_AN5_ANA;          //Enable AN0 - AN3 as analog inputs
 
-    AD2CHS0bits.CH0SA = 0b01011;      //Select AN1 for CH0 +ve input
+    AD2CHS0bits.CH0SA = 0b01011;      //Select AN11 for CH0 +ve input
     AD2CHS0bits.CH0NA = 0;      //Select Vref- for CH0 -ve input
 
     AD2CSSL = 0x0020;
@@ -118,8 +118,6 @@ unsigned int adcGetLine(){
 
 //Buffers need special attribute to be in DMA memory space
 static int  BufferC[1][SAMP_BUFF_SIZE] __attribute__((space(dma)));
-
-static unsigned int DmaBuffer = 0;
 
 
 /*****************************************************************************

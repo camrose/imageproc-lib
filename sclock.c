@@ -48,6 +48,7 @@
 #define TMR_MSW     (TMR9HLD)
 #define TMR_LSW     (TMR8)
 #define TIME_FACTOR (5)
+#define MILLIS_FACTOR   (625)
 
 // Time is represented by a 32-bit number
 typedef union {
@@ -87,6 +88,11 @@ unsigned long sclockGetTime(void) {
 
     return sclockGetTicks()/TIME_FACTOR;
 
+}
+
+unsigned long sclockGetMillis(void) {
+
+    return sclockGetTicks()/MILLIS_FACTOR;
 }
 
 

@@ -68,5 +68,7 @@ unsigned long sclockGetTicks(void);
 // Returns : time in microseconds
 unsigned long sclockGetTime(void);
 
+unsigned long sclockGetMillis(void);
+
 
 #endif //  __SCLOCK_H
