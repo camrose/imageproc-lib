@@ -94,6 +94,7 @@ static unsigned char is_ready;
 // Asynchronous capture state
 static CTimerState ct_state = CT_NOT_SYNC;
 static unsigned long frame_start, frame_period;
+static unsigned long first_frame_time = 0;
 
 // Asynchronous capture timing parameters
 static unsigned int row_row_time = ROW_ROW_TIME;
@@ -362,6 +363,9 @@ void processRow(void) {
     if(next_row_index >= DS_IMAGE_ROWS) {
         current_frame->frame_num = cntrRead(frame_counter); // write frame number
         current_frame->timestamp = sclockGetLocalTicks();
+        if (first_frame_time == 0) {
+            first_frame_time = sclockGetLocalTicks();
+        }
         enqueueFullFrame(current_frame); // Add to output queue
         current_frame = NULL;
         next_row_index = 0;        
