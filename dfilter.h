@@ -70,6 +70,15 @@ typedef struct {
 
 typedef DigitalFilterStruct* DigitalFilter;
 
+#define MAX_MEDFILT_SIZE        (10)
+
+typedef struct {
+    unsigned char order;     // order = n
+    float xold[MAX_MEDFILT_SIZE + 1];       // n prev x values
+} MedianFilterStruct;
+
+typedef MedianFilterStruct* MedianFilter;
+
 DigitalFilter __attribute__ ((deprecated)) dfilterCreate(unsigned char order, FilterType type,
 float* xcoeffs, float* ycoeffs);
 
@@ -83,6 +92,10 @@ float* xcoeffs, float* ycoeffs);
 */
 void dfilterInit(DigitalFilter f, unsigned char order, FilterType type,
 float* xcoeffs, float* ycoeffs);
+
+void medianFilterInit(MedianFilter f, unsigned char order);
+
+float medianFilterApply(MedianFilter f, float x);
 
 float dfilterApply(DigitalFilter f, float x);
 

@@ -71,6 +71,32 @@ float dfilterApply(DigitalFilter f, float x)
     return y;
 }
 
+float medianFilterApply(MedianFilter f, float x)
+{
+    float y;
+    unsigned int i,j=0;
+
+    f->xold[0] = x;
+    y = 0;
+
+    for (i = 0; i <= f->order; i++) {
+        if (f->xold[i] > 0) {
+            y += f->xold[i];
+            j++;
+        }
+    }
+    if (j > 0) {
+        y /= j;
+    } else {
+        y = 0;
+    }
+
+    memmove(&f->xold[1], &f->xold[0], sizeof(float)*(f->order));
+
+    return y;
+}
+
+
 
 DigitalFilter dfilterCreate(unsigned char order, FilterType type,
                 float* xcoeffs, float* ycoeffs)
@@ -89,6 +115,15 @@ void dfilterInit(DigitalFilter f, unsigned char order, FilterType type,
     memcpy(&f->xcoef, xcoeffs, sizeof(float)*(order + 1));
     memcpy(&f->ycoef, ycoeffs, sizeof(float)*(order + 1));
     
+}
+
+void medianFilterInit(MedianFilter f, unsigned char order) {
+
+    memset(f, 0x00, sizeof(MedianFilterStruct));
+
+    if(order > MAX_MEDFILT_SIZE) { return; }
+    f->order = order;
+
 }
 
 
