@@ -87,4 +87,6 @@ void quatConj(Quaternion *q, Quaternion *result);
  */
 void quatRotate(Quaternion *q1, Quaternion *v, Quaternion *result);
 
+void quat180(Quaternion *q);
+
 #endif

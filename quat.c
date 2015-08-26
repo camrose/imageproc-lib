@@ -51,6 +51,29 @@ void quatCopy(Quaternion *dst, Quaternion *src) {
 
 }
 
+void quat180(Quaternion *q) {
+    float w,x,y,z;
+    if (q == NULL) {
+        return;
+    }
+    w = q->w;
+    x = q->x;
+    y = q->y;
+    z = q->z;
+
+    if (w > z) {
+        q->w = z;
+        q->x = -y;
+        q->y = x;
+        q->z = w;
+    } else {
+        q->w = z;
+        q->x = y;
+        q->y = -x;
+        q->z = w;
+    }
+}
+
 void quatRotate(Quaternion *q, Quaternion *v, Quaternion *result) {
 
     if(q == NULL || v == NULL || result == NULL) { return; }
